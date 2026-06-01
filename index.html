@@ -1,179 +1,85 @@
 <!doctype html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Identiti · Marketplace Business Intelligence</title>
+<title>Babli · Marketplace Business Intelligence</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
-  :root{
-    --brand:#093C76;
-    --brand-700:#072d59;
-    --brand-300:#3a6aa8;
-    --brand-50:#eef3fb;
-    --bg:#FFFFF0;
-    --surface:#ffffff;
-    --ink:#0f172a;
-    --ink-2:#475569;
-    --ink-3:#94a3b8;
-    --line:#e7e3d3;
-    --line-2:#eceadb;
-    --pos:#0f9d6f;
-    --neg:#d24545;
-    --warn:#c47a1a;
-    --soft:#f6f3e3;
-  }
+  :root{--brand:#093C76;--brand-700:#072d59;--brand-300:#3a6aa8;--brand-50:#eef3fb;
+        --bg:#FFFFF0;--surface:#ffffff;--ink:#0f172a;--ink-2:#475569;--ink-3:#94a3b8;
+        --line:#e7e3d3;--line-2:#eceadb;--pos:#0f9d6f;--neg:#d24545;--warn:#c47a1a;--soft:#f6f3e3;}
   *{font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;}
-  html{scroll-behavior:smooth;}
-  html,body{background:var(--bg);color:var(--ink);}
+  html{scroll-behavior:smooth;} html,body{background:var(--bg);color:var(--ink);}
   body{font-feature-settings:"ss01","cv11";letter-spacing:-0.005em;}
   .num{font-variant-numeric:tabular-nums;}
-  .card{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:16px;
-    box-shadow:0 1px 0 rgba(15,23,42,.02), 0 8px 24px -16px rgba(9,60,118,.18);
-    transition:transform .25s ease, box-shadow .25s ease;
-  }
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+        box-shadow:0 1px 0 rgba(15,23,42,.02), 0 8px 24px -16px rgba(9,60,118,.18);
+        transition:transform .25s ease, box-shadow .25s ease;}
   .card-hover:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(15,23,42,.02), 0 18px 36px -22px rgba(9,60,118,.30);}
   .kpi-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 18px 14px;position:relative;overflow:hidden;}
   .kpi-card .stripe{position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--brand),var(--brand-300));opacity:.9}
   .kpi-label{font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
   .kpi-value{font-size:26px;font-weight:700;color:var(--brand);margin-top:6px;letter-spacing:-0.02em}
   .kpi-sub{font-size:11.5px;color:var(--ink-2);margin-top:2px}
-  .delta-pos{color:var(--pos);font-weight:600}
-  .delta-neg{color:var(--neg);font-weight:600}
-  .delta-warn{color:var(--warn);font-weight:600}
-
-  .sidebar{
-    position:fixed;left:0;top:0;bottom:0;width:268px;
-    background:linear-gradient(180deg,#072d59 0%,#093C76 60%, #0a2e63 100%);
-    color:#dbe6f4;
-    border-right:1px solid rgba(255,255,255,.06);
-    display:flex;flex-direction:column;
-    z-index:40;
-  }
+  .delta-pos{color:var(--pos);font-weight:600} .delta-neg{color:var(--neg);font-weight:600} .delta-warn{color:var(--warn);font-weight:600}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:268px;background:linear-gradient(180deg,#072d59 0%,#093C76 60%, #0a2e63 100%);
+           color:#dbe6f4;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;z-index:40;}
   .nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:10px;font-size:13.5px;color:#c4d2e6;cursor:pointer;letter-spacing:-0.005em;position:relative;}
   .nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
   .nav-item.active{background:rgba(255,255,255,.10);color:#fff}
   .nav-item.active::before{content:"";position:absolute;left:-6px;top:8px;bottom:8px;width:3px;border-radius:2px;background:#f5d769}
   .sb-section{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#7b94b7;padding:14px 16px 8px;font-weight:700}
   .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:var(--brand-50);color:var(--brand);font-size:11px;font-weight:600}
-  .pill-neg{background:#fdecec;color:var(--neg)}
-  .pill-pos{background:#e7f7f0;color:var(--pos)}
-  .pill-warn{background:#fcf1de;color:var(--warn)}
-
-  .seg{display:inline-flex;background:#f3f1e0;border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
-  .seg button{padding:6px 12px;font-size:12px;color:var(--ink-2);border-radius:8px;font-weight:600}
-  .seg button.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 0 rgba(15,23,42,.04), 0 4px 10px -6px rgba(9,60,118,.25)}
-
-  /* tables */
+  .pill-neg{background:#fdecec;color:var(--neg)} .pill-pos{background:#e7f7f0;color:var(--pos)} .pill-warn{background:#fcf1de;color:var(--warn)}
   .tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
   .tbl thead th{position:sticky;top:0;background:#f6f3e3;color:var(--brand);font-weight:700;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
   .tbl tbody td{padding:11px 12px;border-bottom:1px solid var(--line-2);color:var(--ink)}
-  .tbl tbody tr:nth-child(even) td{background:#fbf8e8}
-  .tbl tbody tr:hover td{background:#f1ecd3}
+  .tbl tbody tr:nth-child(even) td{background:#fbf8e8} .tbl tbody tr:hover td{background:#f1ecd3}
   .tbl td.num,.tbl th.num{text-align:right;font-variant-numeric:tabular-nums}
   .tbl tbody tr:last-child td{border-bottom:0}
-
-  /* sparkbar */
   .sparkbar{height:6px;background:#eee9d2;border-radius:3px;overflow:hidden}
   .sparkbar > span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-300))}
-
-  /* select */
-  .input{
-    background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--ink);width:100%;
-    transition:border .2s ease, box-shadow .2s ease;
-  }
-  .input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(9,60,118,.10)}
   .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;font-size:11.5px;border-radius:999px;background:#f3f1e0;border:1px solid var(--line);color:var(--ink-2)}
   .chip.brand{background:var(--brand-50);color:var(--brand);border-color:#d8e3f1;font-weight:600}
-
-  /* continuous scroll layout — all sections visible */
   .section{display:block;scroll-margin-top:88px;}
   .section + .section{border-top:1px solid var(--line-2);}
-  .section-anchor{
-    position:sticky;top:74px;z-index:20;
-    background:rgba(255,255,240,.94);
-    backdrop-filter:saturate(140%) blur(8px);
-    margin:0 -32px 18px;padding:14px 32px 12px;
-    border-bottom:1px solid var(--line-2);
-  }
-  .section-anchor .ix{
-    font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
-    color:#7b94b7;font-weight:700;
-  }
-  .section-anchor h2{
-    font-size:22px;font-weight:700;color:var(--brand);
-    letter-spacing:-0.015em;line-height:1.2;margin-top:2px;
-  }
+  .section-anchor{position:sticky;top:74px;z-index:20;background:rgba(255,255,240,.94);backdrop-filter:saturate(140%) blur(8px);
+                  margin:0 -32px 18px;padding:14px 32px 12px;border-bottom:1px solid var(--line-2);}
+  .section-anchor .ix{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#7b94b7;font-weight:700;}
+  .section-anchor h2{font-size:22px;font-weight:700;color:var(--brand);letter-spacing:-0.015em;line-height:1.2;margin-top:2px;}
   .section-anchor .sub{font-size:12.5px;color:var(--ink-2);margin-top:2px;}
   .divider{height:1px;background:linear-gradient(90deg,transparent,var(--line) 30%, var(--line) 70%, transparent)}
-  .insight{
-    background:linear-gradient(140deg,#f7f2dd 0%,#fffce6 100%);
-    border:1px solid #e9e0b8;
-    border-radius:14px;padding:14px 16px;
-  }
+  .insight{background:linear-gradient(140deg,#f7f2dd 0%,#fffce6 100%);border:1px solid #e9e0b8;border-radius:14px;padding:14px 16px;}
   .insight-brand{background:linear-gradient(140deg,#eef3fb 0%,#f7faff 100%);border-color:#d8e3f1}
   .h-sec{display:flex;align-items:flex-end;justify-content:space-between;margin:0 0 14px}
   .h-title{font-size:18px;font-weight:700;color:var(--brand);letter-spacing:-0.01em}
   .h-sub{font-size:12px;color:var(--ink-2);margin-top:2px}
-
   .scroll-x{overflow-x:auto}
   ::-webkit-scrollbar{width:9px;height:9px}
   ::-webkit-scrollbar-thumb{background:#d9d2b5;border-radius:8px}
   ::-webkit-scrollbar-thumb:hover{background:#c1b88f}
   ::-webkit-scrollbar-track{background:transparent}
-
   .legend-dot{width:8px;height:8px;border-radius:2px;display:inline-block}
-
-  .ai-callout{
-    background:linear-gradient(140deg,#0a2e63 0%,#093C76 100%);
-    color:#eaf1fb;border-radius:16px;padding:18px 18px;
-    box-shadow:0 18px 40px -28px rgba(9,60,118,.5);
-  }
+  .ai-callout{background:linear-gradient(140deg,#0a2e63 0%,#093C76 100%);color:#eaf1fb;border-radius:16px;padding:18px 18px;
+              box-shadow:0 18px 40px -28px rgba(9,60,118,.5);}
   .ai-callout .label{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#f5d769;font-weight:700}
   .ai-callout .t{font-size:15px;font-weight:600;margin-top:6px;line-height:1.4}
   .ai-callout .d{font-size:12.5px;color:#b8c8de;margin-top:6px;line-height:1.5}
-
-  .ring{position:relative;width:74px;height:74px}
-  .ring svg{transform:rotate(-90deg)}
-  .ring .pct{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;font-weight:700;color:var(--brand)}
-
-  .scroll-shadow{position:relative}
-  .scroll-shadow::after{content:"";position:absolute;right:0;top:0;bottom:0;width:24px;background:linear-gradient(90deg,transparent,var(--bg))}
-
-  details.filter > summary{list-style:none;cursor:pointer;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7b94b7;font-weight:700;padding:6px 4px;display:flex;align-items:center;justify-content:space-between}
-  details.filter > summary::-webkit-details-marker{display:none}
-  details[open].filter > summary > .arr{transform:rotate(90deg)}
-  .arr{transition:transform .2s ease;font-size:9px}
-
   .badge-rank{width:22px;height:22px;border-radius:6px;background:var(--brand-50);color:var(--brand);font-size:11px;font-weight:700;display:inline-grid;place-items:center}
-
   .topbar{position:sticky;top:0;background:rgba(255,255,240,.92);backdrop-filter:saturate(140%) blur(8px);z-index:30;border-bottom:1px solid var(--line)}
-
-  /* responsive */
-  @media (max-width:1100px){
-    .sidebar{transform:translateX(-100%)}
-    .main{margin-left:0 !important}
-  }
-</style>
-</head>
-<body>
-
-<!-- ============ SIDEBAR ============ -->
+  @media (max-width:1100px){.sidebar{transform:translateX(-100%)} .main{margin-left:0 !important}}
+</style></head><body>
 <aside class="sidebar">
   <div class="px-5 pt-6 pb-5">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-lg grid place-items-center" style="background:linear-gradient(135deg,#f5d769,#e6c44e);color:#093C76;font-weight:800;font-size:15px">i</div>
+      <div class="w-9 h-9 rounded-lg grid place-items-center" style="background:linear-gradient(135deg,#f5d769,#e6c44e);color:#093C76;font-weight:800;font-size:15px">B</div>
       <div>
-        <div class="text-[15px] font-bold tracking-tight text-white leading-none">Identiti</div>
-        <div class="text-[10.5px] text-[#9fb5d1] mt-1 tracking-[0.14em] uppercase">MBR · February 2025</div>
+        <div class="text-[15px] font-bold tracking-tight text-white leading-none">Babli</div>
+        <div class="text-[10.5px] text-[#9fb5d1] mt-1 tracking-[0.14em] uppercase">MBR · May 2026</div>
       </div>
     </div>
   </div>
-
   <div class="sb-section">Workspaces</div>
   <nav class="px-3 space-y-1 overflow-y-auto pr-2 flex-1" id="nav">
     <div class="nav-item active" data-tgt="exec"><span>◉</span>Executive Overview</div>
@@ -189,1212 +95,896 @@
     <div style="height:1px;background:rgba(255,255,255,.08);margin:8px 6px"></div>
     <div class="nav-item" data-tgt="insights"><span style="color:#f5d769">◆</span>GH Insights</div>
   </nav>
-
   <div class="mt-auto px-5 py-5 border-t border-white/10">
-    <div class="text-[9.5px] tracking-[0.18em] uppercase text-[#7b94b7] font-bold mb-2">Powered by</div>
-    <img src="https://www.greenhonchos.com/wp-content/uploads/2024/04/Group-2@2x.png"
-         alt="GreenHonchos"
-         style="height:24px;width:auto;opacity:.92;filter:brightness(0) invert(1);" />
+    <div class="text-[9.5px] tracking-[0.18em] uppercase text-[#7b94b7] font-bold mb-2">Generated</div>
+    <div class="text-[11px] text-[#9fb5d1]">2026-06-01 15:17</div>
   </div>
 </aside>
 
-<!-- ============ MAIN ============ -->
 <main class="main" style="margin-left:268px;">
-
-<!-- topbar -->
 <div class="topbar px-8 py-3.5 flex items-center justify-between">
   <div>
-    <div class="text-[11px] uppercase tracking-[0.16em] text-[#475569] font-bold">Identiti · Marketplace MBR Report</div>
-    <div class="text-[17px] font-bold tracking-tight" style="color:var(--brand)" id="topbar-section">Executive Overview · February 2025</div>
+    <div class="text-[11px] uppercase tracking-[0.16em] text-[#475569] font-bold">Babli · Marketplace MBR Report</div>
+    <div class="text-[17px] font-bold tracking-tight" style="color:var(--brand)" id="topbar-section">Executive Overview · May 2026</div>
   </div>
   <div class="flex items-center gap-2">
-    <span class="chip brand" style="padding:6px 12px;font-size:11.5px">Reporting Period · Feb 2025</span>
-    <span class="chip" style="padding:6px 12px;font-size:11.5px">vs. Jan 2025</span>
+    <span class="chip brand" style="padding:6px 12px;font-size:11.5px">Reporting Period · May 2026</span>
+    <span class="chip" style="padding:6px 12px;font-size:11.5px">vs Apr 2026</span>
   </div>
 </div>
 
-<!-- ============================================================== -->
-<!-- 1. EXECUTIVE OVERVIEW -->
-<!-- ============================================================== -->
 <section id="exec" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">01 · Executive Overview</div>
-    <h2>Executive Overview · February 2025</h2>
+    <h2>Executive Overview · May 2026</h2>
     <div class="sub">Top-line KPIs, channel mix, gross-to-net realization &amp; reason-led return concentration</div>
   </div>
+  <div class="grid grid-cols-4 xl:grid-cols-6 gap-3.5"><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Gross Sales</div>
+<div class="kpi-value num">₹1.78 Cr</div>
+<div class="kpi-sub">gross revenue</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Net Revenue</div>
+<div class="kpi-value num">₹1.38 Cr</div>
+<div class="kpi-sub">post-returns</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Gross Qty</div>
+<div class="kpi-value num">10,723</div>
+<div class="kpi-sub">units shipped</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Net Qty</div>
+<div class="kpi-value num">8,321</div>
+<div class="kpi-sub">after returns</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Total Returns</div>
+<div class="kpi-value num">2,402</div>
+<div class="kpi-sub"><span class='delta-neg'>22.40%</span> qty returned</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Return %</div>
+<div class="kpi-value num">22.40%</div>
+<div class="kpi-sub"><span class='delta-neg'>▲ -13.6 pp</span> vs target 36%</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">RTO %</div>
+<div class="kpi-value num">5.93%</div>
+<div class="kpi-sub">636 of 10,723</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#c47a1a" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Customer Return %</div>
+<div class="kpi-value num">16.47%</div>
+<div class="kpi-sub">1,766 buyer-init.</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">ASP</div>
+<div class="kpi-value num">₹1,658</div>
+<div class="kpi-sub">blended price</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Contribution Margin</div>
+<div class="kpi-value num">6.69%</div>
+<div class="kpi-sub">modeled · post-COGS</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#0f9d6f" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Net Realization</div>
+<div class="kpi-value num">₹1.10 Cr</div>
+<div class="kpi-sub">modeled · bank credit</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#0f9d6f" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div><div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">MP Recovery %</div>
+<div class="kpi-value num">79.50%</div>
+<div class="kpi-sub">modeled · % of net rev</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#0f9d6f" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div></div>
 
-  <!-- KPI strip -->
-  <div class="grid grid-cols-4 xl:grid-cols-6 gap-3.5">
-    <!-- KPI -->
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">Gross Sales</div>
-      <div class="kpi-value num">₹12.32 L</div>
-      <div class="kpi-sub"><span class="delta-pos">▲ 18.4%</span> vs Jan</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 28,14 42,15 56,11 70,12 84,7 100,4"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">Net Revenue</div>
-      <div class="kpi-value num">₹7.14 L</div>
-      <div class="kpi-sub"><span class="delta-pos">▲ 12.1%</span> · post-returns</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,17 14,15 28,16 42,13 56,12 70,11 84,9 100,6"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">Gross Qty</div>
-      <div class="kpi-value num">804</div>
-      <div class="kpi-sub"><span class="delta-pos">▲ 21.6%</span> units shipped</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,20 14,18 28,17 42,14 56,13 70,11 84,8 100,5"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">Net Qty</div>
-      <div class="kpi-value num">466</div>
-      <div class="kpi-sub"><span class="delta-pos">▲ 9.8%</span> · after returns</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,17 28,15 42,14 56,14 70,12 84,11 100,8"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">Total Returns</div>
-      <div class="kpi-value num">338</div>
-      <div class="kpi-sub"><span class="delta-neg">▲ 26.4%</span> qty returned</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,18 14,17 28,15 42,13 56,11 70,9 84,7 100,4"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">Return %</div>
-      <div class="kpi-value num">42.04%</div>
-      <div class="kpi-sub"><span class="delta-neg">▲ 1.8 pp</span> vs target 36%</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,15 14,14 28,13 42,13 56,12 70,11 84,10 100,8"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">RTO %</div>
-      <div class="kpi-value num">18.78%</div>
-      <div class="kpi-sub"><span class="delta-warn">▲ 0.6 pp</span> 151 of 804</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#c47a1a" stroke-width="1.6" points="0,15 14,14 28,14 42,13 56,12 70,12 84,11 100,10"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">Customer Return %</div>
-      <div class="kpi-value num">23.26%</div>
-      <div class="kpi-sub"><span class="delta-neg">▲ 1.2 pp</span> 187 buyer-init.</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,16 14,15 28,15 42,14 56,13 70,12 84,11 100,9"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">ASP</div>
-      <div class="kpi-value num">₹1,532</div>
-      <div class="kpi-sub"><span class="delta-pos">▲ ₹38</span> blended price</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,14 14,13 28,14 42,12 56,11 70,11 84,10 100,8"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">Contribution Margin</div>
-      <div class="kpi-value num">14.6%</div>
-      <div class="kpi-sub"><span class="delta-pos">▲ 1.4 pp</span> post-COGS</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#0f9d6f" stroke-width="1.6" points="0,18 14,16 28,15 42,14 56,12 70,11 84,9 100,7"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">Net Realization</div>
-      <div class="kpi-value num">₹6.18 L</div>
-      <div class="kpi-sub"><span class="delta-pos">▲ 9.3%</span> bank credit</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#0f9d6f" stroke-width="1.6" points="0,18 14,17 28,15 42,13 56,12 70,11 84,9 100,6"/></svg>
-    </div>
-    <div class="kpi-card card-hover"><div class="stripe"></div>
-      <div class="kpi-label">MP Recovery %</div>
-      <div class="kpi-value num">86.5%</div>
-      <div class="kpi-sub"><span class="delta-pos">▲ 0.9 pp</span> of net rev</div>
-      <svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#0f9d6f" stroke-width="1.6" points="0,15 14,14 28,13 42,13 56,12 70,12 84,11 100,9"/></svg>
-    </div>
-  </div>
-
-  <!-- AI insights row -->
   <div class="grid grid-cols-12 gap-4 mt-5">
     <div class="col-span-12 xl:col-span-4 ai-callout">
       <div class="label">◆ GH Insight</div>
-      <div class="t">Flipkart RTO surged to 57.7% — single largest drag on Feb realization.</div>
-      <div class="d">86 of 149 returns on Flipkart were courier-rejected, double Myntra's RTO rate. Driving ~₹1.78 L in lost net revenue. GH Recommendation — reverse-logistics audit + COD throttle on Tier-3 pincodes.</div>
+      <div class="t">Myntra RTO is the single largest drag — 635 of 2395 returns courier-rejected (26.51%).</div>
+      <div class="d">Driving an estimated ₹31.88 L in monthly leakage. Recommendation — reverse-logistics audit + COD throttle on Tier-3 pincodes.</div>
     </div>
     <div class="col-span-12 xl:col-span-4 insight">
       <div class="flex items-center gap-2"><span class="pill pill-warn">Watch</span><span class="text-[12.5px] text-[#475569]">Returns mix shifting</span></div>
-      <div class="mt-1.5 text-[14.5px] font-bold" style="color:var(--brand);line-height:1.4">Sizing issues now drive 71% of all customer returns (134 of 187).</div>
-      <div class="text-[12px] mt-1.5 text-[#475569] leading-relaxed">Kurta SKU 108-99258-43 alone contributed 28 sizing returns. Catalog size chart refresh is the highest-leverage fix.</div>
+      <div class="mt-1.5 text-[14.5px] font-bold" style="color:var(--brand);line-height:1.4">Sizing Issue drives 72.25% of all customer returns (1276 of 1766). Catalog size-chart refresh is the highest-leverage fix.</div>
+      <div class="text-[12px] mt-1.5 text-[#475569] leading-relaxed"></div>
     </div>
     <div class="col-span-12 xl:col-span-4 insight insight-brand">
-      <div class="flex items-center gap-2"><span class="pill">Opportunity</span><span class="text-[12.5px] text-[#475569]">South + East = 57% of revenue</span></div>
-      <div class="mt-1.5 text-[14.5px] font-bold" style="color:var(--brand);line-height:1.4">South India delivers ₹4.28 L on 281 units — 35% of total revenue.</div>
-      <div class="text-[12px] mt-1.5 text-[#475569] leading-relaxed">South + East together absorb 57% of net qty. Re-allocate Myntra paid budget toward these regions to defend ASP of ₹1,561.</div>
+      <div class="flex items-center gap-2"><span class="pill">Opportunity</span><span class="text-[12.5px] text-[#475569]">Regional concentration</span></div>
+      <div class="mt-1.5 text-[14.5px] font-bold" style="color:var(--brand);line-height:1.4">West India delivers ₹59.79 L on 3703 units — 33.63% of total revenue.</div>
+      <div class="text-[12px] mt-1.5 text-[#475569] leading-relaxed"> Top-2 (West + North) absorb 59.50%. Re-allocate paid budget toward these regions to defend ASP of ₹1,658.</div>
     </div>
   </div>
 
-  <!-- Sale & Return Trend — 2 separate charts (Qty + Revenue) -->
   <div class="grid grid-cols-12 gap-4 mt-5">
     <div class="card col-span-12 xl:col-span-6 p-5 card-hover">
-      <div class="h-sec">
-        <div>
-          <div class="h-title">Sale &amp; Return Trend · Qty</div>
-          <div class="h-sub">Channel-level units shipped · Dec 2024 → Feb 2025</div>
-        </div>
-        <span class="pill">Units</span>
-      </div>
+      <div class="h-sec"><div><div class="h-title">Sale &amp; Return Trend · Qty</div>
+        <div class="h-sub">Channel-level units shipped · Mar 2026 → May 2026</div></div><span class="pill">Units</span></div>
       <div id="chart-trend-qty" style="height:320px"></div>
     </div>
-
     <div class="card col-span-12 xl:col-span-6 p-5 card-hover">
-      <div class="h-sec">
-        <div>
-          <div class="h-title">Sale &amp; Return Trend · Revenue</div>
-          <div class="h-sub">Channel-level gross revenue · Dec 2024 → Feb 2025</div>
-        </div>
-        <span class="pill">₹ INR</span>
-      </div>
+      <div class="h-sec"><div><div class="h-title">Sale &amp; Return Trend · Revenue</div>
+        <div class="h-sub">Channel-level gross revenue · Mar 2026 → May 2026</div></div><span class="pill">₹ INR</span></div>
       <div id="chart-trend-rev" style="height:320px"></div>
     </div>
   </div>
 
   <div class="grid grid-cols-12 gap-4 mt-4">
     <div class="card col-span-12 xl:col-span-4 p-5 card-hover">
-      <div class="h-sec">
-        <div><div class="h-title">Revenue Mix by Channel</div><div class="h-sub">₹12.32 L across 5 marketplaces</div></div>
-      </div>
+      <div class="h-sec"><div><div class="h-title">Revenue Mix by Channel</div>
+        <div class="h-sub">₹1.78 Cr across 2 marketplaces</div></div></div>
       <div id="chart-donut" style="height:280px"></div>
-      <div class="grid grid-cols-2 gap-1.5 mt-2 text-[11.5px] text-[#475569]">
-        <div class="flex items-center gap-1.5"><span class="legend-dot" style="background:#093C76"></span>Myntra · 41.6%</div>
-        <div class="flex items-center gap-1.5"><span class="legend-dot" style="background:#3a6aa8"></span>Flipkart · 37.0%</div>
-        <div class="flex items-center gap-1.5"><span class="legend-dot" style="background:#6c8fc4"></span>Amazon · 9.8%</div>
-        <div class="flex items-center gap-1.5"><span class="legend-dot" style="background:#9eb5d8"></span>Ajio · 8.9%</div>
-        <div class="flex items-center gap-1.5"><span class="legend-dot" style="background:#d0d9e8"></span>Tatacliq · 2.7%</div>
-      </div>
     </div>
     <div class="card col-span-12 xl:col-span-8 p-5 card-hover">
-      <div class="h-sec">
-        <div><div class="h-title">Gross-to-Net Realization Waterfall</div><div class="h-sub">How ₹12.32 L of gross sales becomes ₹6.18 L of bank credit</div></div>
-        <span class="pill">Feb 2025</span>
-      </div>
+      <div class="h-sec"><div><div class="h-title">Gross-to-Net Realization Waterfall</div>
+        <div class="h-sub">How ₹1.78 Cr of gross sales becomes ₹1.10 Cr of bank credit · <i>modeled</i></div></div>
+        <span class="pill">May 2026</span></div>
       <div id="chart-waterfall" style="height:320px"></div>
     </div>
   </div>
 
-  <div class="grid grid-cols-12 gap-4 mt-4">
-    <div class="card col-span-12 p-5 card-hover">
-      <div class="h-sec">
-        <div><div class="h-title">Return % Heatmap · Channel × Reason</div><div class="h-sub">Concentration of damage by reason category</div></div>
-      </div>
-      <div id="chart-heatmap" style="height:320px"></div>
-    </div>
+  <div class="card mt-4 p-5 card-hover">
+    <div class="h-sec"><div><div class="h-title">Return % Heatmap · Channel × Reason</div>
+      <div class="h-sub">Concentration of damage by reason category</div></div></div>
+    <div id="chart-heatmap" style="height:320px"></div>
   </div>
 
-  <!-- Channel snapshot table -->
   <div class="card mt-4 p-5 card-hover">
     <div class="h-sec">
-      <div><div class="h-title">Channel Snapshot — Feb 2025</div><div class="h-sub">Sale, RTO and Customer Return bifurcation by marketplace</div></div>
-      <div class="flex gap-2"><span class="chip">5 channels</span><span class="chip brand">Sorted by Sale ▼</span></div>
+      <div><div class="h-title">Channel Snapshot — May 2026</div>
+      <div class="h-sub">Sale, RTO and Customer Return bifurcation by marketplace</div></div>
+      <div class="flex gap-2"><span class="chip">2 channels</span><span class="chip brand">Sorted by Sale ▼</span></div>
     </div>
-    <div class="scroll-x">
-    <table class="tbl">
-      <thead><tr>
-        <th>Channel</th><th class="num">Sale</th><th class="num">Sale %</th>
-        <th class="num">Total Return</th><th class="num">Return %</th>
-        <th class="num">RTO</th><th class="num">RTO %</th>
-        <th class="num">Cust. Return</th><th class="num">CR %</th>
-        <th class="num">Revenue</th><th class="num">ASP</th>
-        <th>Share</th>
-      </tr></thead>
-      <tbody>
-        <tr><td><span class="badge-rank">1</span> <b>Myntra</b></td><td class="num">328</td><td class="num">40.8%</td><td class="num">135</td><td class="num"><span class="delta-neg">41.16%</span></td><td class="num">39</td><td class="num">28.89%</td><td class="num">96</td><td class="num">71.11%</td><td class="num">₹5,11,962</td><td class="num">₹1,561</td><td><div class="sparkbar"><span style="width:100%"></span></div></td></tr>
-        <tr><td><span class="badge-rank">2</span> <b>Flipkart</b></td><td class="num">303</td><td class="num">37.7%</td><td class="num">149</td><td class="num"><span class="delta-neg">49.17%</span></td><td class="num">86</td><td class="num"><span class="delta-neg">57.72%</span></td><td class="num">63</td><td class="num">42.28%</td><td class="num">₹4,56,337</td><td class="num">₹1,506</td><td><div class="sparkbar"><span style="width:92%"></span></div></td></tr>
-        <tr><td><span class="badge-rank">3</span> <b>Amazon</b></td><td class="num">79</td><td class="num">9.8%</td><td class="num">42</td><td class="num"><span class="delta-neg">53.16%</span></td><td class="num">21</td><td class="num">50.00%</td><td class="num">21</td><td class="num">50.00%</td><td class="num">₹1,20,623</td><td class="num">₹1,527</td><td><div class="sparkbar"><span style="width:24%"></span></div></td></tr>
-        <tr><td><span class="badge-rank">4</span> <b>Ajio</b></td><td class="num">72</td><td class="num">9.0%</td><td class="num">12</td><td class="num"><span class="delta-pos">16.67%</span></td><td class="num">5</td><td class="num">41.67%</td><td class="num">7</td><td class="num">58.33%</td><td class="num">₹1,10,128</td><td class="num">₹1,530</td><td><div class="sparkbar"><span style="width:22%"></span></div></td></tr>
-        <tr><td><span class="badge-rank">5</span> <b>Tatacliq</b></td><td class="num">22</td><td class="num">2.7%</td><td class="num">0</td><td class="num"><span class="delta-pos">0.00%</span></td><td class="num">0</td><td class="num">0.00%</td><td class="num">0</td><td class="num">0.00%</td><td class="num">₹32,487</td><td class="num">₹1,477</td><td><div class="sparkbar"><span style="width:7%"></span></div></td></tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================== -->
-<!-- 2. SALES PERFORMANCE -->
-<!-- ============================================================== -->
+    <div class="scroll-x"><table class="tbl">
+      <thead><tr><th>Channel</th><th class="num">Sale</th><th class="num">Sale %</th>
+      <th class="num">Total Return</th><th class="num">Return %</th>
+      <th class="num">RTO</th><th class="num">RTO %</th>
+      <th class="num">Cust. Return</th><th class="num">CR %</th>
+      <th class="num">Revenue</th><th class="num">ASP</th><th>Share</th></tr></thead><tbody><tr><td><span class="badge-rank">1</span> <b>Myntra</b></td><td class="num">10679</td><td class="num">99.6%</td><td class="num">2395</td><td class="num"><span class="">22.43%</span></td><td class="num">635</td><td class="num"><span class="">26.51%</span></td><td class="num">1760</td><td class="num">73.49%</td><td class="num">₹17,735,285</td><td class="num">₹1,661</td><td><div class="sparkbar"><span style="width:100%"></span></div></td></tr><tr><td><span class="badge-rank">2</span> <b>Amazon</b></td><td class="num">44</td><td class="num">0.4%</td><td class="num">7</td><td class="num"><span class="delta-pos">15.91%</span></td><td class="num">1</td><td class="num"><span class="">14.29%</span></td><td class="num">6</td><td class="num">85.71%</td><td class="num">₹45,772</td><td class="num">₹1,040</td><td><div class="sparkbar"><span style="width:0%"></span></div></td></tr></tbody></table></div></div></section>
 <section id="sales" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">02 · Sales Performance</div>
     <h2>Sales Performance</h2>
     <div class="sub">Revenue, units, ASP and momentum across channels &amp; categories</div>
   </div>
-
   <div class="grid grid-cols-4 gap-3.5">
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Gross Revenue</div><div class="kpi-value num">₹12.32 L</div><div class="kpi-sub"><span class="delta-pos">▲ 18.4%</span> MoM</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Units Shipped</div><div class="kpi-value num">804</div><div class="kpi-sub"><span class="delta-pos">▲ 21.6%</span> MoM</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">ASP (Gross)</div><div class="kpi-value num">₹1,532</div><div class="kpi-sub"><span class="delta-pos">▲ ₹38</span> blended</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Revenue / Channel</div><div class="kpi-value num">₹2.46 L</div><div class="kpi-sub">Avg of 5 channels</div></div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Gross Revenue</div>
+<div class="kpi-value num">₹1.78 Cr</div>
+<div class="kpi-sub">May 2026</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Units Shipped</div>
+<div class="kpi-value num">10,723</div>
+<div class="kpi-sub">May 2026</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">ASP (Gross)</div>
+<div class="kpi-value num">₹1,658</div>
+<div class="kpi-sub">blended</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Revenue / Channel</div>
+<div class="kpi-value num">₹88.91 L</div>
+<div class="kpi-sub">avg of 2 channels</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
   </div>
-
   <div class="grid grid-cols-12 gap-4 mt-5">
     <div class="card col-span-12 xl:col-span-8 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Channel Revenue · Last 3 Months</div><div class="h-sub">Smoothed gross revenue trajectory</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Channel Revenue · Last 3 Months</div>
+        <div class="h-sub">Smoothed gross revenue trajectory</div></div></div>
       <div id="chart-rev-trend" style="height:340px"></div>
     </div>
     <div class="card col-span-12 xl:col-span-4 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Category Mix</div><div class="h-sub">Share of gross qty · Feb 2025</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Category Mix</div>
+        <div class="h-sub">Share of gross qty · May 2026</div></div></div>
       <div id="chart-cat-mix" style="height:300px"></div>
     </div>
   </div>
-
   <div class="grid grid-cols-12 gap-4 mt-4">
     <div class="card col-span-12 xl:col-span-7 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">ASP by Channel vs. Blended</div><div class="h-sub">Premium positioning per marketplace</div></div></div>
+      <div class="h-sec"><div><div class="h-title">ASP by Channel vs. Blended</div>
+        <div class="h-sub">Premium positioning per marketplace</div></div></div>
       <div id="chart-asp" style="height:300px"></div>
     </div>
     <div class="card col-span-12 xl:col-span-5 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Category — Sale × Return × Revenue</div><div class="h-sub">Premium categories &amp; their exposure</div></div></div>
-      <div class="scroll-x">
-      <table class="tbl">
-        <thead><tr><th>Category</th><th class="num">Sale</th><th class="num">Sale %</th><th class="num">Return %</th><th class="num">Revenue</th><th class="num">ASP</th></tr></thead>
-        <tbody>
-          <tr><td><b>Kurta</b></td><td class="num">602</td><td class="num">76.20%</td><td class="num">40.20%</td><td class="num">₹9,16,945</td><td class="num">₹1,523</td></tr>
-          <tr><td><b>Shirt</b></td><td class="num">148</td><td class="num">18.73%</td><td class="num"><span class="delta-neg">51.35%</span></td><td class="num">₹2,16,974</td><td class="num">₹1,466</td></tr>
-          <tr><td><b>Kurti</b></td><td class="num">37</td><td class="num">4.68%</td><td class="num">40.54%</td><td class="num">₹72,740</td><td class="num">₹1,966</td></tr>
-          <tr><td><b>Flatknits</b></td><td class="num">3</td><td class="num">0.38%</td><td class="num">33.33%</td><td class="num">₹5,391</td><td class="num">₹1,797</td></tr>
-        </tbody>
-      </table>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================== -->
-<!-- 3. RETURNS & RTO ANALYTICS -->
-<!-- ============================================================== -->
+      <div class="h-sec"><div><div class="h-title">Category — Sale × Return × Revenue</div>
+        <div class="h-sub">Premium categories &amp; their exposure</div></div></div>
+      <div class="scroll-x"><table class="tbl">
+      <thead><tr><th>Category</th><th class="num">Sale</th><th class="num">Sale %</th><th class="num">Return %</th><th class="num">Revenue</th><th class="num">ASP</th></tr></thead><tbody><tr><td><b>Default</b></td><td class="num">10723</td><td class="num">100.00%</td><td class="num"><span class="">22.39%</span></td><td class="num">₹17,781,057</td><td class="num">₹1,658</td></tr></tbody></table></div></div></div></section>
 <section id="returns" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">03 · Returns &amp; RTO Analytics</div>
     <h2>Returns &amp; RTO Analytics</h2>
-    <div class="sub">Where buyer-rejection and courier-rejection are concentrated · blended return rate 42.04%</div>
+    <div class="sub">Where buyer-rejection and courier-rejection are concentrated · blended return rate 22.40%</div>
   </div>
-
   <div class="grid grid-cols-4 gap-3.5">
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Total Returns</div><div class="kpi-value num">338</div><div class="kpi-sub"><span class="delta-neg">42.04% of gross</span></div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">RTO Qty</div><div class="kpi-value num">151</div><div class="kpi-sub">44.7% of all returns</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Customer Returns</div><div class="kpi-value num">187</div><div class="kpi-sub">55.3% of all returns</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Returns Value Impact</div><div class="kpi-value num">₹5.18 L</div><div class="kpi-sub">Estimated revenue at risk</div></div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Total Returns</div>
+<div class="kpi-value num">2,402</div>
+<div class="kpi-sub"><span class='delta-neg'>22.40% of gross</span></div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">RTO Qty</div>
+<div class="kpi-value num">636</div>
+<div class="kpi-sub">26.5% of all returns</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#c47a1a" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Customer Returns</div>
+<div class="kpi-value num">1,766</div>
+<div class="kpi-sub">73.5% of all returns</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Returns Value Impact</div>
+<div class="kpi-value num">₹39.83 L</div>
+<div class="kpi-sub">estimated revenue at risk</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div>
   </div>
-
   <div class="grid grid-cols-12 gap-4 mt-5">
     <div class="card col-span-12 xl:col-span-8 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Channel-wise RTO vs Customer Return</div><div class="h-sub">Stacked decomposition of total returns</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Channel-wise RTO vs Customer Return</div>
+        <div class="h-sub">Stacked decomposition of total returns</div></div></div>
       <div id="chart-rto-cr" style="height:340px"></div>
     </div>
     <div class="card col-span-12 xl:col-span-4 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Return Reason Distribution</div><div class="h-sub">187 customer returns by root cause</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Return Reason Distribution</div>
+        <div class="h-sub">1,766 customer returns by root cause</div></div></div>
       <div id="chart-reasons" style="height:340px"></div>
     </div>
   </div>
-
-  <div class="grid grid-cols-12 gap-4 mt-4">
-    <div class="card col-span-12 xl:col-span-12 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Return-Rate Trajectory (3M Trailing)</div><div class="h-sub">Where returns are accelerating vs. stabilizing</div></div></div>
-      <div id="chart-ret-trend" style="height:300px"></div>
-    </div>
+  <div class="card mt-4 p-5 card-hover">
+    <div class="h-sec"><div><div class="h-title">Return-Rate Trajectory (3M Trailing)</div>
+      <div class="h-sub">Where returns are accelerating vs. stabilizing</div></div></div>
+    <div id="chart-ret-trend" style="height:300px"></div>
   </div>
 </section>
 
-<!-- ============================================================== -->
-<!-- 4. CHANNEL PERFORMANCE -->
-<!-- ============================================================== -->
 <section id="channels" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">04 · Channel Performance</div>
     <h2>Channel Performance</h2>
-    <div class="sub">5 marketplaces · Sale, Return, RTO &amp; Customer-Return contribution</div>
+    <div class="sub">2 marketplaces · Sale, Return, RTO &amp; Customer-Return contribution</div>
   </div>
-
   <div class="grid grid-cols-12 gap-4">
     <div class="card col-span-12 xl:col-span-7 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Sale vs Return — Side-by-Side</div><div class="h-sub">Horizontal comparison by channel</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Sale vs Return — Side-by-Side</div>
+        <div class="h-sub">Horizontal comparison by channel</div></div></div>
       <div id="chart-ch-bars" style="height:340px"></div>
     </div>
     <div class="card col-span-12 xl:col-span-5 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Channel Health Scorecard</div><div class="h-sub">Composite of return %, RTO %, ASP &amp; share</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Channel Health Scorecard</div>
+        <div class="h-sub">Composite of return %, RTO %, ASP &amp; share</div></div></div>
       <div id="chart-radar" style="height:340px"></div>
     </div>
   </div>
-
   <div class="card mt-4 p-5 card-hover">
-    <div class="h-sec"><div><div class="h-title">Channel-wise Sale &amp; Return — 3-Month Bifurcation</div><div class="h-sub">Dec 2024 → Feb 2025 · qty &amp; return %</div></div></div>
-    <div class="scroll-x">
-    <table class="tbl">
-      <thead><tr>
-        <th>Channel</th>
-        <th class="num">Sale<br><span class="text-[10px] font-normal">Dec 24</span></th>
-        <th class="num">Ret<br><span class="text-[10px] font-normal">Dec 24</span></th>
-        <th class="num">Ret %<br><span class="text-[10px] font-normal">Dec 24</span></th>
-        <th class="num">Sale<br><span class="text-[10px] font-normal">Jan 25</span></th>
-        <th class="num">Ret<br><span class="text-[10px] font-normal">Jan 25</span></th>
-        <th class="num">Ret %<br><span class="text-[10px] font-normal">Jan 25</span></th>
-        <th class="num">Sale<br><span class="text-[10px] font-normal">Feb 25</span></th>
-        <th class="num">Ret<br><span class="text-[10px] font-normal">Feb 25</span></th>
-        <th class="num">Ret %<br><span class="text-[10px] font-normal">Feb 25</span></th>
-        <th class="num">Growth %</th>
-      </tr></thead>
-      <tbody>
-        <tr><td><b>Ajio</b></td><td class="num">0</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td class="num">—</td><td class="num">—</td><td class="num">72</td><td class="num">12</td><td class="num">16.67%</td><td class="num">—</td></tr>
-        <tr><td><b>Amazon</b></td><td class="num">0</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td class="num">—</td><td class="num">—</td><td class="num">79</td><td class="num">42</td><td class="num"><span class="delta-neg">53.16%</span></td><td class="num">—</td></tr>
-        <tr><td><b>Flipkart</b></td><td class="num">0</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td class="num">—</td><td class="num">—</td><td class="num">303</td><td class="num">149</td><td class="num"><span class="delta-neg">49.17%</span></td><td class="num">—</td></tr>
-        <tr><td><b>Myntra</b></td><td class="num">0</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td class="num">—</td><td class="num">—</td><td class="num">328</td><td class="num">135</td><td class="num">41.16%</td><td class="num">—</td></tr>
-        <tr><td><b>Tatacliq</b></td><td class="num">0</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td class="num">—</td><td class="num">—</td><td class="num">22</td><td class="num">0</td><td class="num"><span class="delta-pos">0.00%</span></td><td class="num">—</td></tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================== -->
-<!-- 5. REGION ANALYTICS -->
-<!-- ============================================================== -->
+    <div class="h-sec"><div><div class="h-title">Channel-wise Sale &amp; Return — 3-Month Bifurcation</div>
+      <div class="h-sub">Mar 2026 → May 2026 · qty &amp; return %</div></div></div>
+    <div class="scroll-x"><table class="tbl"><thead><tr>
+      <th>Channel</th><th class="num">Sale<br><span class="text-[10px] font-normal">Mar 2026</span></th><th class="num">Ret<br><span class="text-[10px] font-normal">Mar 2026</span></th><th class="num">Ret %<br><span class="text-[10px] font-normal">Mar 2026</span></th><th class="num">Sale<br><span class="text-[10px] font-normal">Apr 2026</span></th><th class="num">Ret<br><span class="text-[10px] font-normal">Apr 2026</span></th><th class="num">Ret %<br><span class="text-[10px] font-normal">Apr 2026</span></th><th class="num">Sale<br><span class="text-[10px] font-normal">May 2026</span></th><th class="num">Ret<br><span class="text-[10px] font-normal">May 2026</span></th><th class="num">Ret %<br><span class="text-[10px] font-normal">May 2026</span></th><th class="num">Growth %</th></tr></thead><tbody><tr><td><b>Amazon</b></td><td class="num">0</td><td class="num">—</td><td class="num"><span class="">—</span></td><td class="num">0</td><td class="num">—</td><td class="num"><span class="">—</span></td><td class="num">44</td><td class="num">7</td><td class="num"><span class="delta-pos">15.91%</span></td><td class="num"><span class="">—</span></td></tr><tr><td><b>Myntra</b></td><td class="num">0</td><td class="num">—</td><td class="num"><span class="">—</span></td><td class="num">0</td><td class="num">—</td><td class="num"><span class="">—</span></td><td class="num">10679</td><td class="num">2395</td><td class="num"><span class="">22.43%</span></td><td class="num"><span class="">—</span></td></tr></tbody></table></div></div></section>
 <section id="region" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">05 · Region Analytics</div>
     <h2>Region Analytics</h2>
     <div class="sub">Geographic distribution of demand &amp; revenue</div>
   </div>
-
   <div class="grid grid-cols-4 gap-3.5">
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Top Region</div><div class="kpi-value num">South</div><div class="kpi-sub">281 qty · ₹4.27 L · 34.7%</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Fastest Growing</div><div class="kpi-value num">East</div><div class="kpi-sub"><span class="delta-pos">▲ 32%</span> share gain</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Lowest Penetration</div><div class="kpi-value num">Central</div><div class="kpi-sub">59 qty · 7.3%</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Top 2 Regions</div><div class="kpi-value num">57%</div><div class="kpi-sub">of revenue concentration</div></div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Top Region</div>
+<div class="kpi-value num">West</div>
+<div class="kpi-sub">3,703 qty · ₹59.79 L · 33.63%</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Top 2 Regions</div>
+<div class="kpi-value num">59.50%</div>
+<div class="kpi-sub">of revenue concentration</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Lowest Penetration</div>
+<div class="kpi-value num">Unknown</div>
+<div class="kpi-sub">9 qty · 0.1%</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#c47a1a" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Regions Covered</div>
+<div class="kpi-value num">6</div>
+<div class="kpi-sub">geographic zones</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
   </div>
-
   <div class="grid grid-cols-12 gap-4 mt-5">
     <div class="card col-span-12 xl:col-span-7 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Region × Revenue Map</div><div class="h-sub">Qty sold &amp; revenue by zone</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Region × Revenue Map</div>
+        <div class="h-sub">Qty sold &amp; revenue by zone</div></div></div>
       <div id="chart-region-bars" style="height:340px"></div>
     </div>
     <div class="card col-span-12 xl:col-span-5 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Geographic Share</div><div class="h-sub">Revenue concentration</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Geographic Share</div>
+        <div class="h-sub">Revenue concentration</div></div></div>
       <div id="chart-region-donut" style="height:300px"></div>
     </div>
   </div>
-
   <div class="card mt-4 p-5 card-hover">
-    <div class="h-sec"><div><div class="h-title">Region-wise Sales — Feb 2025</div><div class="h-sub">Qty, revenue, share &amp; ASP</div></div></div>
-    <div class="scroll-x">
-    <table class="tbl">
-      <thead><tr><th>Region</th><th class="num">Qty</th><th class="num">Qty Share</th><th class="num">Revenue</th><th class="num">Revenue Share</th><th class="num">ASP</th><th>Penetration</th></tr></thead>
-      <tbody>
-        <tr><td><b>South</b></td><td class="num">281</td><td class="num">34.7%</td><td class="num">₹4,27,545</td><td class="num">34.7%</td><td class="num">₹1,521</td><td><div class="sparkbar"><span style="width:100%"></span></div></td></tr>
-        <tr><td><b>East</b></td><td class="num">155</td><td class="num">19.2%</td><td class="num">₹2,36,372</td><td class="num">19.2%</td><td class="num">₹1,525</td><td><div class="sparkbar"><span style="width:55%"></span></div></td></tr>
-        <tr><td><b>North</b></td><td class="num">118</td><td class="num">14.6%</td><td class="num">₹1,85,979</td><td class="num">15.1%</td><td class="num">₹1,576</td><td><div class="sparkbar"><span style="width:42%"></span></div></td></tr>
-        <tr><td><b>West</b></td><td class="num">119</td><td class="num">14.7%</td><td class="num">₹1,81,900</td><td class="num">14.8%</td><td class="num">₹1,529</td><td><div class="sparkbar"><span style="width:42%"></span></div></td></tr>
-        <tr><td><b>Central</b></td><td class="num">59</td><td class="num">7.3%</td><td class="num">₹89,614</td><td class="num">7.3%</td><td class="num">₹1,519</td><td><div class="sparkbar"><span style="width:21%"></span></div></td></tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================== -->
-<!-- 6. CUSTOMER RETURN REASONS -->
-<!-- ============================================================== -->
+    <div class="h-sec"><div><div class="h-title">Region-wise Sales — May 2026</div>
+      <div class="h-sub">Qty, revenue, share &amp; ASP</div></div></div>
+    <div class="scroll-x"><table class="tbl">
+      <thead><tr><th>Region</th><th class="num">Qty</th><th class="num">Qty Share</th>
+        <th class="num">Revenue</th><th class="num">Revenue Share</th><th class="num">ASP</th><th>Penetration</th></tr></thead><tbody><tr><td><b>West</b></td><td class="num">3703</td><td class="num">34.5%</td><td class="num">₹5,979,311</td><td class="num">33.6%</td><td class="num">₹1,615</td><td><div class="sparkbar"><span style="width:100%"></span></div></td></tr><tr><td><b>North</b></td><td class="num">2671</td><td class="num">24.9%</td><td class="num">₹4,600,079</td><td class="num">25.9%</td><td class="num">₹1,722</td><td><div class="sparkbar"><span style="width:77%"></span></div></td></tr><tr><td><b>South</b></td><td class="num">2698</td><td class="num">25.2%</td><td class="num">₹4,388,177</td><td class="num">24.7%</td><td class="num">₹1,626</td><td><div class="sparkbar"><span style="width:73%"></span></div></td></tr><tr><td><b>East</b></td><td class="num">1200</td><td class="num">11.2%</td><td class="num">₹2,038,288</td><td class="num">11.5%</td><td class="num">₹1,699</td><td><div class="sparkbar"><span style="width:34%"></span></div></td></tr><tr><td><b>Central</b></td><td class="num">442</td><td class="num">4.1%</td><td class="num">₹759,878</td><td class="num">4.3%</td><td class="num">₹1,719</td><td><div class="sparkbar"><span style="width:13%"></span></div></td></tr><tr><td><b>Unknown</b></td><td class="num">9</td><td class="num">0.1%</td><td class="num">₹15,324</td><td class="num">0.1%</td><td class="num">₹1,703</td><td><div class="sparkbar"><span style="width:0%"></span></div></td></tr></tbody></table></div></div></section>
 <section id="reasons" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">06 · Customer Return Reasons</div>
     <h2>Customer Return Reasons</h2>
-    <div class="sub">Root cause analysis · 187 buyer-initiated returns · Sizing dominates at 71.7%</div>
+    <div class="sub">Root cause analysis · 1,766 buyer-initiated returns · Sizing Issue dominates at 72.25%</div>
   </div>
-
   <div class="grid grid-cols-12 gap-4">
     <div class="card col-span-12 xl:col-span-8 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Return Reasons — Pareto</div><div class="h-sub">Top 2 reasons drive 84% of all returns</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Return Reasons — Pareto</div>
+        <div class="h-sub">Top 2 reasons drive 83% of all returns</div></div></div>
       <div id="chart-pareto" style="height:340px"></div>
     </div>
     <div class="card col-span-12 xl:col-span-4 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Reason Severity</div><div class="h-sub">Quantity returned by reason</div></div></div>
-      <div class="space-y-3 mt-2">
-        <div>
-          <div class="flex justify-between text-[12.5px]"><span>Sizing Issue</span><span class="num font-semibold delta-neg">134</span></div>
-          <div class="sparkbar mt-1"><span style="width:100%;background:linear-gradient(90deg,#d24545,#e57373)"></span></div>
-        </div>
-        <div>
-          <div class="flex justify-between text-[12.5px]"><span>Quality Issue</span><span class="num font-semibold">24</span></div>
-          <div class="sparkbar mt-1"><span style="width:18%"></span></div>
-        </div>
-        <div>
-          <div class="flex justify-between text-[12.5px]"><span>Not Mentioned / Interested</span><span class="num font-semibold">13</span></div>
-          <div class="sparkbar mt-1"><span style="width:10%"></span></div>
-        </div>
-        <div>
-          <div class="flex justify-between text-[12.5px]"><span>Catalog Issue</span><span class="num font-semibold">12</span></div>
-          <div class="sparkbar mt-1"><span style="width:9%"></span></div>
-        </div>
-        <div>
-          <div class="flex justify-between text-[12.5px]"><span>Wrong product / Size Delivered</span><span class="num font-semibold">4</span></div>
-          <div class="sparkbar mt-1"><span style="width:3%"></span></div>
-        </div>
-      </div>
-      <div class="insight mt-4 text-[12px]"><b style="color:var(--brand)">GH Recommendation:</b> Refresh Kurta size charts on Myntra + Flipkart. Sizing fixes alone could reduce blended return % by 5.4 pp.</div>
+      <div class="h-sec"><div><div class="h-title">Reason Severity</div>
+        <div class="h-sub">Quantity returned by reason</div></div></div>
+      <div class="space-y-3 mt-2"><div><div class="flex justify-between text-[12.5px]"><span>Sizing Issue</span><span class="num font-semibold delta-neg">1276</span></div><div class="sparkbar mt-1"><span style="width:100%;background:linear-gradient(90deg,#d24545,#e57373)"></span></div></div><div><div class="flex justify-between text-[12.5px]"><span>Not Mentioned/Interested</span><span class="num font-semibold font-semibold">194</span></div><div class="sparkbar mt-1"><span style="width:15%;"></span></div></div><div><div class="flex justify-between text-[12.5px]"><span>Catalog Issue</span><span class="num font-semibold font-semibold">181</span></div><div class="sparkbar mt-1"><span style="width:14%;"></span></div></div><div><div class="flex justify-between text-[12.5px]"><span>Quality Issue</span><span class="num font-semibold font-semibold">115</span></div><div class="sparkbar mt-1"><span style="width:9%;"></span></div></div>      </div>
+      <div class="insight mt-4 text-[12px]"><b style="color:var(--brand)">GH Recommendation:</b> Refresh size charts on top channels. Sizing fixes alone could reduce blended return % by ~5.9 pp.</div>
     </div>
   </div>
 
   <div class="card p-5 mt-4 card-hover">
-    <div class="h-sec"><div><div class="h-title">Reason-wise Returns Log</div><div class="h-sub">Detailed counts &amp; share</div></div></div>
-    <div class="scroll-x">
-    <table class="tbl">
-      <thead><tr><th>Reason</th><th class="num">Total CR Return</th><th class="num">Share of CR</th><th class="num">Share of All Returns</th><th>Severity</th></tr></thead>
-      <tbody>
-        <tr><td><b>Sizing Issue</b></td><td class="num">134</td><td class="num">71.7%</td><td class="num">39.6%</td><td><span class="pill pill-neg">Critical</span></td></tr>
-        <tr><td><b>Quality Issue</b></td><td class="num">24</td><td class="num">12.8%</td><td class="num">7.1%</td><td><span class="pill pill-warn">High</span></td></tr>
-        <tr><td><b>Not Mentioned / Interested</b></td><td class="num">13</td><td class="num">7.0%</td><td class="num">3.8%</td><td><span class="pill">Medium</span></td></tr>
-        <tr><td><b>Catalog Issue</b></td><td class="num">12</td><td class="num">6.4%</td><td class="num">3.6%</td><td><span class="pill">Medium</span></td></tr>
-        <tr><td><b>Wrong product / Size Delivered</b></td><td class="num">4</td><td class="num">2.1%</td><td class="num">1.2%</td><td><span class="pill pill-pos">Low</span></td></tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================== -->
-<!-- 7. PRODUCT PERFORMANCE -->
-<!-- ============================================================== -->
+    <div class="h-sec"><div><div class="h-title">Reason-wise Returns Log</div>
+      <div class="h-sub">Detailed counts &amp; share</div></div></div>
+    <div class="scroll-x"><table class="tbl">
+      <thead><tr><th>Reason</th><th class="num">Total CR Return</th><th class="num">Share of CR</th><th class="num">Share of All Returns</th><th>Severity</th></tr></thead><tbody><tr><td><b>Sizing Issue</b></td><td class="num">1276</td><td class="num">72.3%</td><td class="num">53.1%</td><td><span class="pill pill-neg">Critical</span></td></tr><tr><td><b>Not Mentioned/Interested</b></td><td class="num">194</td><td class="num">11.0%</td><td class="num">8.1%</td><td><span class="pill pill-warn">High</span></td></tr><tr><td><b>Catalog Issue</b></td><td class="num">181</td><td class="num">10.2%</td><td class="num">7.5%</td><td><span class="pill ">Medium</span></td></tr><tr><td><b>Quality Issue</b></td><td class="num">115</td><td class="num">6.5%</td><td class="num">4.8%</td><td><span class="pill ">Medium</span></td></tr></tbody></table></div></div></section>
 <section id="products" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">07 · Product Performance</div>
     <h2>Product Performance</h2>
     <div class="sub">SKU-level winners, laggards &amp; margin drivers</div>
   </div>
-
   <div class="grid grid-cols-4 gap-3.5">
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Active SKUs</div><div class="kpi-value num">352</div><div class="kpi-sub">across 4 categories</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Top SKU</div><div class="kpi-value num">108-99258-43</div><div class="kpi-sub">78 units · ₹1.16 L</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Best Category</div><div class="kpi-value num">Kurta</div><div class="kpi-sub">76.2% of qty</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Highest ASP</div><div class="kpi-value num">Kurti</div><div class="kpi-sub">₹1,966 ASP</div></div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Active SKUs</div>
+<div class="kpi-value num">480</div>
+<div class="kpi-sub">across 1 categories</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Top SKU</div>
+<div class="kpi-value num">B-543</div>
+<div class="kpi-sub">409 units · ₹8.02 L</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Best Category</div>
+<div class="kpi-value num">Default</div>
+<div class="kpi-sub">100.00% of qty</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Highest ASP</div>
+<div class="kpi-value num">Default</div>
+<div class="kpi-sub">₹1,658 ASP</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
   </div>
-
   <div class="grid grid-cols-12 gap-4 mt-5">
     <div class="card col-span-12 xl:col-span-7 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Top 10 Best Sellers — Revenue vs Return %</div><div class="h-sub">Identify high-volume SKUs with hidden return drag</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Top 10 Best Sellers — Revenue vs Return %</div>
+        <div class="h-sub">Identify high-volume SKUs with hidden return drag</div></div></div>
       <div id="chart-sku-scatter" style="height:340px"></div>
     </div>
     <div class="card col-span-12 xl:col-span-5 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Category × Return % vs Sale %</div><div class="h-sub">Where category share misaligns with quality</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Category × Return % vs Sale %</div>
+        <div class="h-sub">Where category share misaligns with quality</div></div></div>
       <div id="chart-cat-compare" style="height:340px"></div>
     </div>
   </div>
-
   <div class="card p-5 mt-4 card-hover">
-    <div class="h-sec"><div><div class="h-title">Top 20 Best Sellers</div><div class="h-sub">Sale, revenue, return % &amp; ASP · sorted by units</div></div><span class="chip brand">Feb 2025</span></div>
-    <div class="scroll-x" style="max-height:420px;overflow-y:auto">
-    <table class="tbl">
-      <thead><tr><th>Article</th><th>Category</th><th class="num">Sale</th><th class="num">Revenue</th><th class="num">Inventory</th><th class="num">Return</th><th class="num">Return %</th><th class="num">ASP</th></tr></thead>
-      <tbody id="best-sellers"></tbody>
-    </table>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================== -->
-<!-- 8. OPERATIONS HEALTH -->
-<!-- ============================================================== -->
+    <div class="h-sec"><div><div class="h-title">Top 20 Best Sellers</div>
+      <div class="h-sub">Sale, revenue, return % &amp; ASP · sorted by units</div></div><span class="chip brand">May 2026</span></div>
+    <div class="scroll-x" style="max-height:420px;overflow-y:auto"><table class="tbl">
+      <thead><tr><th>Article</th><th>Category</th><th class="num">Sale</th><th class="num">Revenue</th><th class="num">Inventory</th><th class="num">Return</th><th class="num">Return %</th><th class="num">ASP</th></tr></thead><tbody><tr><td><b>B-543</b></td><td>Default</td><td class="num">409</td><td class="num">₹802,309</td><td class="num">10</td><td class="num">111</td><td class="num"><span class="delta-warn">27.14%</span></td><td class="num">₹1,962</td></tr><tr><td><b>B-558</b></td><td>Default</td><td class="num">308</td><td class="num">₹482,254</td><td class="num">226</td><td class="num">40</td><td class="num"><span class="">12.99%</span></td><td class="num">₹1,566</td></tr><tr><td><b>B-342</b></td><td>Default</td><td class="num">305</td><td class="num">₹532,277</td><td class="num">34</td><td class="num">80</td><td class="num"><span class="delta-warn">26.23%</span></td><td class="num">₹1,745</td></tr><tr><td><b>B-643</b></td><td>Default</td><td class="num">249</td><td class="num">₹390,033</td><td class="num">5</td><td class="num">66</td><td class="num"><span class="delta-warn">26.51%</span></td><td class="num">₹1,566</td></tr><tr><td><b>B-547</b></td><td>Default</td><td class="num">248</td><td class="num">₹436,506</td><td class="num">4</td><td class="num">51</td><td class="num"><span class="delta-warn">20.56%</span></td><td class="num">₹1,760</td></tr><tr><td><b>B-348</b></td><td>Default</td><td class="num">228</td><td class="num">₹385,806</td><td class="num">14</td><td class="num">71</td><td class="num"><span class="delta-warn">31.14%</span></td><td class="num">₹1,692</td></tr><tr><td><b>B-367</b></td><td>Default</td><td class="num">220</td><td class="num">₹346,176</td><td class="num">107</td><td class="num">17</td><td class="num"><span class="">7.73%</span></td><td class="num">₹1,574</td></tr><tr><td><b>B-362</b></td><td>Default</td><td class="num">219</td><td class="num">₹403,104</td><td class="num">42</td><td class="num">56</td><td class="num"><span class="delta-warn">25.57%</span></td><td class="num">₹1,841</td></tr><tr><td><b>B-354</b></td><td>Default</td><td class="num">194</td><td class="num">₹319,040</td><td class="num">109</td><td class="num">35</td><td class="num"><span class="">18.04%</span></td><td class="num">₹1,645</td></tr><tr><td><b>B-374</b></td><td>Default</td><td class="num">190</td><td class="num">₹240,574</td><td class="num">46</td><td class="num">59</td><td class="num"><span class="delta-warn">31.05%</span></td><td class="num">₹1,266</td></tr><tr><td><b>B-544</b></td><td>Default</td><td class="num">184</td><td class="num">₹359,152</td><td class="num">144</td><td class="num">20</td><td class="num"><span class="">10.87%</span></td><td class="num">₹1,952</td></tr><tr><td><b>B-556</b></td><td>Default</td><td class="num">171</td><td class="num">₹281,978</td><td class="num">29</td><td class="num">57</td><td class="num"><span class="delta-warn">33.33%</span></td><td class="num">₹1,649</td></tr><tr><td><b>B-533</b></td><td>Default</td><td class="num">158</td><td class="num">₹388,142</td><td class="num">138</td><td class="num">49</td><td class="num"><span class="delta-warn">31.01%</span></td><td class="num">₹2,457</td></tr><tr><td><b>B-376</b></td><td>Default</td><td class="num">157</td><td class="num">₹197,702</td><td class="num">46</td><td class="num">18</td><td class="num"><span class="">11.46%</span></td><td class="num">₹1,259</td></tr><tr><td><b>B-384</b></td><td>Default</td><td class="num">149</td><td class="num">₹217,906</td><td class="num">266</td><td class="num">14</td><td class="num"><span class="">9.40%</span></td><td class="num">₹1,462</td></tr><tr><td><b>B-491</b></td><td>Default</td><td class="num">136</td><td class="num">₹158,707</td><td class="num">172</td><td class="num">24</td><td class="num"><span class="">17.65%</span></td><td class="num">₹1,167</td></tr><tr><td><b>B-360</b></td><td>Default</td><td class="num">129</td><td class="num">₹197,341</td><td class="num">7</td><td class="num">24</td><td class="num"><span class="">18.60%</span></td><td class="num">₹1,530</td></tr><tr><td><b>B-316</b></td><td>Default</td><td class="num">124</td><td class="num">₹111,942</td><td class="num">3</td><td class="num">45</td><td class="num"><span class="delta-neg">36.29%</span></td><td class="num">₹903</td></tr><tr><td><b>B-377</b></td><td>Default</td><td class="num">123</td><td class="num">₹155,835</td><td class="num">29</td><td class="num">21</td><td class="num"><span class="">17.07%</span></td><td class="num">₹1,267</td></tr><tr><td><b>B-383</b></td><td>Default</td><td class="num">121</td><td class="num">₹177,074</td><td class="num">82</td><td class="num">21</td><td class="num"><span class="">17.36%</span></td><td class="num">₹1,463</td></tr></tbody></table></div></div></section>
 <section id="ops" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">08 · Operations Health</div>
     <h2>Operations Health</h2>
-    <div class="sub">SLA compliance, COGS-to-bank funnel &amp; reverse logistics</div>
+    <div class="sub">SLA compliance, COGS-to-bank funnel &amp; reverse logistics · <i>modeled proxies where direct data isn't available</i></div>
   </div>
-
   <div class="grid grid-cols-4 gap-3.5">
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Order-to-Ship SLA</div><div class="kpi-value num">94.8%</div><div class="kpi-sub"><span class="delta-pos">▲ 1.2 pp</span></div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Forward Damage %</div><div class="kpi-value num">0.6%</div><div class="kpi-sub">low</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Reverse TAT</div><div class="kpi-value num">8.4 d</div><div class="kpi-sub"><span class="delta-warn">▲ 0.5 d</span></div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Quality Grading B+</div><div class="kpi-value num">71%</div><div class="kpi-sub">of returned units</div></div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Net Realization</div>
+<div class="kpi-value num">₹1.10 Cr</div>
+<div class="kpi-sub">modeled · bank credit</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#0f9d6f" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">MP Recovery %</div>
+<div class="kpi-value num">79.50%</div>
+<div class="kpi-sub">modeled · % of net rev</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#0f9d6f" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Returns Drag</div>
+<div class="kpi-value num">₹39.83 L</div>
+<div class="kpi-sub">lost gross at risk</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Recoverable / month</div>
+<div class="kpi-value num">₹17.41 L</div>
+<div class="kpi-sub">addressable leakage</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#0f9d6f" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
   </div>
-
   <div class="grid grid-cols-12 gap-4 mt-5">
     <div class="card col-span-12 xl:col-span-7 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Forward Order → Delivered → Returned Funnel</div><div class="h-sub">Drop-off at each operations stage</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Forward Order → Delivered → Returned Funnel</div>
+        <div class="h-sub">Drop-off at each operations stage</div></div></div>
       <div id="chart-funnel" style="height:340px"></div>
     </div>
     <div class="card col-span-12 xl:col-span-5 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">SLA Compliance by Channel</div><div class="h-sub">% orders shipped within TAT</div></div></div>
+      <div class="h-sec"><div><div class="h-title">SLA Compliance by Channel</div>
+        <div class="h-sub">% orders shipped within TAT · <i>modeled from RTO/return</i></div></div></div>
       <div id="chart-sla" style="height:340px"></div>
     </div>
   </div>
 </section>
 
-<!-- ============================================================== -->
-<!-- 9. INVENTORY & FULFILLMENT -->
-<!-- ============================================================== -->
 <section id="inv" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">09 · Inventory &amp; Fulfillment</div>
     <h2>Inventory &amp; Fulfillment</h2>
     <div class="sub">Depth, discount mix &amp; slow-moving exposure</div>
   </div>
-
   <div class="grid grid-cols-4 gap-3.5">
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Total Inventory</div><div class="kpi-value num">5,559</div><div class="kpi-sub">across 352 articles</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Healthy Depth (≥3)</div><div class="kpi-value num">190</div><div class="kpi-sub">articles · 5,362 units</div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Thin Stock (&lt;3)</div><div class="kpi-value num">83</div><div class="kpi-sub"><span class="delta-warn">refill needed</span></div></div>
-    <div class="kpi-card card-hover"><div class="stripe"></div><div class="kpi-label">Out-of-Stock</div><div class="kpi-value num">79</div><div class="kpi-sub"><span class="delta-neg">articles · 0 units</span></div></div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Total Inventory</div>
+<div class="kpi-value num">25,658</div>
+<div class="kpi-sub">across 480 articles</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#093C76" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Healthy Depth (≥3)</div>
+<div class="kpi-value num">444</div>
+<div class="kpi-sub">articles · 25,597 units</div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#0f9d6f" stroke-width="1.6" points="0,18 14,16 29,14 43,15 57,11 71,12 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Thin Stock (&lt;3)</div>
+<div class="kpi-value num">31</div>
+<div class="kpi-sub"><span class='delta-warn'>refill needed</span></div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#c47a1a" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div>
+    <div class="kpi-card card-hover"><div class="stripe"></div>
+<div class="kpi-label">Out-of-Stock</div>
+<div class="kpi-value num">5</div>
+<div class="kpi-sub"><span class='delta-neg'>articles · 0 units</span></div>
+<svg viewBox="0 0 100 24" class="w-full h-5 mt-2"><polyline fill="none" stroke="#d24545" stroke-width="1.6" points="0,18 14,17 29,15 43,13 57,11 71,9 86,7 100,4"/></svg>
+</div>
   </div>
-
   <div class="grid grid-cols-12 gap-4 mt-5">
     <div class="card col-span-12 xl:col-span-6 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Inventory Depth Distribution</div><div class="h-sub">Article count vs available units</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Inventory Depth Distribution</div>
+        <div class="h-sub">Article count vs available units</div></div></div>
       <div id="chart-depth" style="height:300px"></div>
     </div>
     <div class="card col-span-12 xl:col-span-6 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Discount Bucket × Sale</div><div class="h-sub">How discount slabs are converting</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Discount Bucket × Sale</div>
+        <div class="h-sub">How discount slabs are converting</div></div></div>
       <div id="chart-disc" style="height:300px"></div>
     </div>
   </div>
-
   <div class="card p-5 mt-4 card-hover">
-    <div class="h-sec"><div><div class="h-title">Top 20 Deep Stock / Slow Moving</div><div class="h-sub">High-inventory SKUs with low velocity — markdown candidates</div></div><span class="chip pill-warn">⚠ Markdown watch</span></div>
-    <div class="scroll-x" style="max-height:420px;overflow-y:auto">
-    <table class="tbl">
-      <thead><tr><th>Article</th><th>Category</th><th class="num">Sale</th><th class="num">Revenue</th><th class="num">Inventory</th><th class="num">Return</th><th class="num">Return %</th><th class="num">ASP</th></tr></thead>
-      <tbody id="slow-movers"></tbody>
-    </table>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================== -->
-<!-- 10. MARKETPLACE BENCHMARKING -->
-<!-- ============================================================== -->
+    <div class="h-sec"><div><div class="h-title">Top 20 Deep Stock / Slow Moving</div>
+      <div class="h-sub">High-inventory SKUs with low velocity — markdown candidates</div></div><span class="chip pill-warn">⚠ Markdown watch</span></div>
+    <div class="scroll-x" style="max-height:420px;overflow-y:auto"><table class="tbl">
+      <thead><tr><th>Article</th><th>Category</th><th class="num">Sale</th><th class="num">Revenue</th><th class="num">Inventory</th><th class="num">Return</th><th class="num">Return %</th><th class="num">ASP</th></tr></thead><tbody><tr><td><b>B-260</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">227</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-525</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">206</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-565</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">203</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-733</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">195</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-552</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">190</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-637</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">177</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-325</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">157</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-569</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">156</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-457</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">156</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-308</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">151</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-310</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">148</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-646</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">148</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-193</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">147</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-850</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">145</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-638</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">133</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-516</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">130</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-504</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">122</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-366</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">120</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-309</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">115</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr><tr><td><b>B-349</b></td><td>nan</td><td class="num">0</td><td class="num">₹0</td><td class="num">102</td><td class="num">0</td><td class="num"><span class="">0.00%</span></td><td class="num">₹0</td></tr></tbody></table></div></div></section>
 <section id="bench" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">10 · Marketplace Benchmarking</div>
     <h2>Marketplace Benchmarking</h2>
     <div class="sub">Head-to-head efficiency: revenue / return / RTO / ASP</div>
   </div>
-
   <div class="grid grid-cols-12 gap-4">
     <div class="card col-span-12 xl:col-span-7 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Composite Scorecard — Sale vs Return % vs RTO %</div><div class="h-sub">Lower-right is best-in-class</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Composite Scorecard — Sale vs Return % vs RTO %</div>
+        <div class="h-sub">Lower-left is best-in-class</div></div></div>
       <div id="chart-bench-scatter" style="height:360px"></div>
     </div>
     <div class="card col-span-12 xl:col-span-5 p-5 card-hover">
-      <div class="h-sec"><div><div class="h-title">Channel Index (vs Best-in-class)</div><div class="h-sub">Ajio sets the bar on Return % · indexed to 100</div></div></div>
+      <div class="h-sec"><div><div class="h-title">Channel Quality Index</div>
+        <div class="h-sub">100 − return %, indexed</div></div></div>
       <div id="chart-index" style="height:360px"></div>
     </div>
   </div>
-
   <div class="card p-5 mt-4 card-hover">
-    <div class="h-sec"><div><div class="h-title">Benchmarking Matrix</div><div class="h-sub">All marketplaces · all key metrics, color-coded</div></div></div>
-    <div class="scroll-x">
-    <table class="tbl">
-      <thead><tr>
-        <th>Channel</th>
-        <th class="num">Revenue</th><th class="num">Sale Qty</th><th class="num">ASP</th>
+    <div class="h-sec"><div><div class="h-title">Benchmarking Matrix</div>
+      <div class="h-sub">All marketplaces · all key metrics, color-coded</div></div></div>
+    <div class="scroll-x"><table class="tbl">
+      <thead><tr><th>Channel</th><th class="num">Revenue</th><th class="num">Sale Qty</th><th class="num">ASP</th>
         <th class="num">Return %</th><th class="num">RTO %</th><th class="num">CR %</th>
-        <th class="num">Net Qty</th><th class="num">Net Revenue</th><th>Verdict</th>
-      </tr></thead>
-      <tbody>
-        <tr><td><b>Myntra</b></td><td class="num">₹5,11,962</td><td class="num">328</td><td class="num">₹1,561</td><td class="num">41.16%</td><td class="num">28.89%</td><td class="num">71.11%</td><td class="num">193</td><td class="num">₹3,01,373</td><td><span class="pill">Hold</span></td></tr>
-        <tr><td><b>Flipkart</b></td><td class="num">₹4,56,337</td><td class="num">303</td><td class="num">₹1,506</td><td class="num">49.17%</td><td class="num">57.72%</td><td class="num">42.28%</td><td class="num">154</td><td class="num">₹2,31,924</td><td><span class="pill pill-neg">Fix RTO</span></td></tr>
-        <tr><td><b>Amazon</b></td><td class="num">₹1,20,623</td><td class="num">79</td><td class="num">₹1,527</td><td class="num">53.16%</td><td class="num">50.00%</td><td class="num">50.00%</td><td class="num">37</td><td class="num">₹56,499</td><td><span class="pill pill-neg">Restructure</span></td></tr>
-        <tr><td><b>Ajio</b></td><td class="num">₹1,10,128</td><td class="num">72</td><td class="num">₹1,530</td><td class="num">16.67%</td><td class="num">41.67%</td><td class="num">58.33%</td><td class="num">60</td><td class="num">₹91,773</td><td><span class="pill pill-pos">Scale</span></td></tr>
-        <tr><td><b>Tatacliq</b></td><td class="num">₹32,487</td><td class="num">22</td><td class="num">₹1,477</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">22</td><td class="num">₹32,487</td><td><span class="pill pill-pos">Scale</span></td></tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-
-
-</section>
-
-<!-- ============================================================== -->
-<!-- 11. GH INSIGHTS — Closing Read-out -->
-<!-- ============================================================== -->
+        <th class="num">Net Qty</th><th class="num">Net Revenue</th><th>Verdict</th></tr></thead><tbody><tr><td><b>Myntra</b></td><td class="num">₹17,735,285</td><td class="num">10679</td><td class="num">₹1,661</td><td class="num">22.43%</td><td class="num">26.51%</td><td class="num">73.49%</td><td class="num">8284</td><td class="num">₹13,757,758</td><td><span class="pill pill-pos">Scale</span></td></tr><tr><td><b>Amazon</b></td><td class="num">₹45,772</td><td class="num">44</td><td class="num">₹1,040</td><td class="num">15.91%</td><td class="num">14.29%</td><td class="num">85.71%</td><td class="num">37</td><td class="num">₹38,490</td><td><span class="pill pill-pos">Scale</span></td></tr></tbody></table></div></div></section>
 <section id="insights" class="section px-8 py-6">
   <div class="section-anchor">
     <div class="ix">11 · GH Insights</div>
     <h2>GH Insights — Closing Read-out</h2>
     <div class="sub">What worked, what hurt, where to recover &amp; the 90-day operating plan</div>
   </div>
-
-  <!-- Headline strip -->
   <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12 xl:col-span-8 ai-callout">
       <div class="label">◆ GH Insight · Boardroom Synthesis</div>
-      <div class="t">Feb 2025 was a healthy top-line month (+18.4% gross) — but ~₹5.18 L of recoverable revenue is leaking through returns &amp; RTO.</div>
-      <div class="d">Two levers drive ~85% of the leakage: <b style="color:#f5d769">Flipkart RTO (57.7%)</b> and <b style="color:#f5d769">Sizing-led customer returns (71.7% of all CRs)</b>. Fixing both lifts blended return % from 42.04% → ~33.5%, recovering an estimated <b style="color:#f5d769">₹1.5 L per month</b> with no incremental ad spend.</div>
+      <div class="t">May 2026 delivered ₹1.78 Cr of gross sales — but ~₹39.83 L is leaking through returns &amp; RTO.</div>
+      <div class="d">Two levers drive most of the leakage: <b style="color:#f5d769">Myntra RTO (26.51%)</b> and <b style="color:#f5d769">Sizing Issue-led customer returns (72.25% of all CRs)</b>. Fixing both lifts blended return % from 22.40% → ~16.80%, recovering an estimated <b style="color:#f5d769">₹17.41 L per month</b> with no incremental ad spend.</div>
     </div>
     <div class="col-span-12 xl:col-span-4 card p-5 card-hover">
       <div class="kpi-label">Total Recoverable Revenue</div>
-      <div class="kpi-value num" style="font-size:32px">₹1.50 L</div>
+      <div class="kpi-value num" style="font-size:32px">₹17.41 L</div>
       <div class="kpi-sub mt-1">per month · addressable</div>
       <div class="divider my-3"></div>
-      <div class="flex items-center justify-between text-[12px] mt-2"><span class="text-[#475569]">Sizing fix</span><span class="num font-semibold" style="color:var(--brand)">₹66,000</span></div>
-      <div class="flex items-center justify-between text-[12px] mt-1.5"><span class="text-[#475569]">Flipkart RTO throttle</span><span class="num font-semibold" style="color:var(--brand)">₹90,000</span></div>
-      <div class="flex items-center justify-between text-[12px] mt-1.5"><span class="text-[#475569]">Slow-mover clearance</span><span class="num font-semibold" style="color:var(--brand)">₹48,000</span></div>
-      <div class="flex items-center justify-between text-[12px] mt-1.5"><span class="text-[#475569]">Ajio + Tatacliq scale-up</span><span class="num font-semibold delta-pos">+ ₹1.20 L</span></div>
+      <div class="flex items-center justify-between text-[12px] mt-2"><span class="text-[#475569]">Sizing fix</span><span class="num font-semibold" style="color:var(--brand)">₹10.58 L</span></div>
+      <div class="flex items-center justify-between text-[12px] mt-1.5"><span class="text-[#475569]">Myntra RTO throttle</span><span class="num font-semibold" style="color:var(--brand)">₹5.27 L</span></div>
+      <div class="flex items-center justify-between text-[12px] mt-1.5"><span class="text-[#475569]">Slow-mover clearance</span><span class="num font-semibold" style="color:var(--brand)">₹1.56 L</span></div>
     </div>
   </div>
-
-  <!-- What's working / What's hurting / Scope -->
   <div class="grid grid-cols-12 gap-4 mt-4">
-    <!-- WORKING -->
     <div class="card col-span-12 xl:col-span-4 p-5 card-hover" style="border-top:3px solid #0f9d6f">
-      <div class="flex items-center justify-between">
-        <div>
-          <div class="h-title" style="color:#0a7d59">What's Working</div>
-          <div class="h-sub">Defend &amp; scale these moats</div>
-        </div>
-        <span class="pill pill-pos">Strengths</span>
-      </div>
-      <div class="mt-4 space-y-3.5">
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#e7f7f0;color:#0a7d59">01</span><b style="color:var(--brand);font-size:13px">Ajio is best-in-class</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Return % of <b>16.67%</b> vs blended 42.04% — paid users convert &amp; retain. Net Qty 60 of 72 shipped.</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#e7f7f0;color:#0a7d59">02</span><b style="color:var(--brand);font-size:13px">Tatacliq · zero-return month</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">22 of 22 units retained · 100% net realization. Channel is small but profitable — ready to scale.</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#e7f7f0;color:#0a7d59">03</span><b style="color:var(--brand);font-size:13px">Myntra ASP discipline</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">₹1,561 ASP — highest of all channels at the largest volume (328 units, 41.6% rev share).</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#e7f7f0;color:#0a7d59">04</span><b style="color:var(--brand);font-size:13px">Kurta demand-supply fit</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">76.2% of qty sold &amp; ₹9.17 L revenue. Healthy depth (190 articles ≥3 units).</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#e7f7f0;color:#0a7d59">05</span><b style="color:var(--brand);font-size:13px">Discount discipline</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">99% of sales within the 0–10% discount band. ASP not eroded by markdowns.</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#e7f7f0;color:#0a7d59">06</span><b style="color:var(--brand);font-size:13px">SLA compliance ~96%</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Forward-logistics on-time across all 5 channels — no fulfillment penalty exposure.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- HURTING -->
+        <div class="flex items-center justify-between">
+          <div><div class="h-title" style="color:#0a7d59">What's Working</div><div class="h-sub">Defend &amp; scale these moats</div></div>
+          <span class="pill pill-pos">Strengths</span></div>
+        <div class="mt-4 space-y-3.5"><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#e7f7f0;color:#0a7d59">01</span><b style="color:var(--brand);font-size:13px">Amazon is best-in-class</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Return % of <b>15.91%</b> vs blended 22.40% — paid users convert &amp; retain. Net Qty 37 of 44 shipped.</div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#e7f7f0;color:#0a7d59">02</span><b style="color:var(--brand);font-size:13px">Myntra ASP discipline</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">₹1,661 ASP — strong of all channels at 10679 units (99.59% share).</div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#e7f7f0;color:#0a7d59">03</span><b style="color:var(--brand);font-size:13px">Default demand-supply fit</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">100.00% of qty sold &amp; ₹1.78 Cr revenue.</div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#e7f7f0;color:#0a7d59">04</span><b style="color:var(--brand);font-size:13px">Discount discipline</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">100% of sales within the 0–10% band. ASP not eroded by markdowns.</div></div></div></div>
     <div class="card col-span-12 xl:col-span-4 p-5 card-hover" style="border-top:3px solid #d24545">
-      <div class="flex items-center justify-between">
-        <div>
-          <div class="h-title" style="color:#a93434">What's Hurting</div>
-          <div class="h-sub">Critical leakage points</div>
-        </div>
-        <span class="pill pill-neg">Issues</span>
-      </div>
-      <div class="mt-4 space-y-3.5">
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fdecec;color:#a93434">01</span><b style="color:var(--brand);font-size:13px">Flipkart RTO crisis</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">57.72% RTO — <b class="delta-neg">86 of 149</b> returns courier-rejected. Single largest leak: ~₹1.78 L lost net revenue this month.</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fdecec;color:#a93434">02</span><b style="color:var(--brand);font-size:13px">Sizing-led customer returns</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7"><b>134 of 187</b> CRs (71.7%) attributed to sizing. Catalog &amp; size-chart problem, not product quality.</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fdecec;color:#a93434">03</span><b style="color:var(--brand);font-size:13px">Amazon CPU is poor</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">53.16% return % — worst per-unit performance. Only 37 net qty from 79 shipped.</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fdecec;color:#a93434">04</span><b style="color:var(--brand);font-size:13px">Shirt return rate elevated</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">51.35% vs Kurta 40.2%. Fit consistency or category-fit on platform off-target.</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fdecec;color:#a93434">05</span><b style="color:var(--brand);font-size:13px">Dead inventory drag</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">79 articles OOS (demand lost) + top slow-movers hold 276 / 237 / 155 units with &gt;35% return rates.</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fdecec;color:#a93434">06</span><b style="color:var(--brand);font-size:13px">Hero SKU bleeding</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">108-99258-43 — 78 sold but 35.9% return. Best-seller doubling as biggest single leak.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SCOPE -->
+        <div class="flex items-center justify-between">
+          <div><div class="h-title" style="color:#a93434">What's Hurting</div><div class="h-sub">Critical leakage points</div></div>
+          <span class="pill pill-neg">Issues</span></div>
+        <div class="mt-4 space-y-3.5"><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#fdecec;color:#a93434">01</span><b style="color:var(--brand);font-size:13px">Myntra RTO crisis</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">26.51% RTO — <b class='delta-neg'>635 of 2395</b> returns courier-rejected. Single largest leak: ₹10.55 L estimated lost net revenue.</div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#fdecec;color:#a93434">02</span><b style="color:var(--brand);font-size:13px">Sizing Issue-led customer returns</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7"><b>1276 of 1766</b> CRs (72.25%) attributed to sizing issue.</div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#fdecec;color:#a93434">03</span><b style="color:var(--brand);font-size:13px">Default return rate elevated</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">22.39% vs Kurta 22.39%. Fit consistency or category-fit on platform off-target.</div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#fdecec;color:#a93434">04</span><b style="color:var(--brand);font-size:13px">Dead inventory drag</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">241 articles with stock but zero sales · 20 SKUs holding 100+ units each.</div></div></div></div>
     <div class="card col-span-12 xl:col-span-4 p-5 card-hover" style="border-top:3px solid #c47a1a">
-      <div class="flex items-center justify-between">
-        <div>
-          <div class="h-title" style="color:#8a560f">Scope of Improvement</div>
-          <div class="h-sub">High-leverage interventions</div>
-        </div>
-        <span class="pill pill-warn">Opportunities</span>
-      </div>
-      <div class="mt-4 space-y-3.5">
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">01</span><b style="color:var(--brand);font-size:13px">Refresh Kurta &amp; Shirt size charts</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Re-shoot fit on real models; publish standardized cm-grids on Myntra + Flipkart. <b style="color:#0a7d59">Est. −5.4 pp blended return %.</b></div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">02</span><b style="color:var(--brand);font-size:13px">COD throttle on Flipkart Tier-3 pincodes</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Whitelist proven-deliver pincodes. <b style="color:#0a7d59">Est. RTO 57.7% → ~38%.</b></div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">03</span><b style="color:var(--brand);font-size:13px">Top-20 SKU PDP overhaul</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Add fit videos + first-3-star review prioritisation + measurements per size for hero SKUs.</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">04</span><b style="color:var(--brand);font-size:13px">Scale Ajio + Tatacliq</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Tatacliq has 0% returns; Ajio at 16.67%. Re-allocate 20% of Flipkart paid budget here. <b style="color:#0a7d59">+₹1.2 L expected gross.</b></div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">05</span><b style="color:var(--brand);font-size:13px">Markdown plan for slow movers</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Time-boxed clearance on 8 SKUs holding 1,200+ units. Free working capital before AW25 buys.</div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">06</span><b style="color:var(--brand);font-size:13px">Restructure Amazon</b></div>
-          <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Pause poor-ROAS SKUs; A+ content for kept assortment; pincode-level COD restriction.</div>
-        </div>
-      </div>
-    </div>
+        <div class="flex items-center justify-between">
+          <div><div class="h-title" style="color:#8a560f">Scope of Improvement</div><div class="h-sub">High-leverage interventions</div></div>
+          <span class="pill pill-warn">Opportunities</span></div>
+        <div class="mt-4 space-y-3.5"><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">01</span><b style="color:var(--brand);font-size:13px">Refresh Default &amp; Default size charts</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Re-shoot fit on real models; publish standardized cm-grids. <b style='color:#0a7d59'>Est. +5.9 pp blended return %.</b></div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">02</span><b style="color:var(--brand);font-size:13px">COD throttle on Myntra Tier-3 pincodes</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Whitelist proven-deliver pincodes. <b style='color:#0a7d59'>Est. RTO 26.51% → ~17.23%.</b></div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">03</span><b style="color:var(--brand);font-size:13px">Top-20 SKU PDP overhaul</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Add fit videos + first-3-star review prioritisation + measurements per size for hero SKUs.</div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">04</span><b style="color:var(--brand);font-size:13px">Scale Amazon + Myntra</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Re-allocate 20% of weak-channel paid budget here. <b style='color:#0a7d59'>+₹8.70 L expected gross.</b></div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">05</span><b style="color:var(--brand);font-size:13px">Markdown plan for slow movers</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Time-boxed clearance on 20 SKUs holding 100+ units. Free working capital before next buy.</div></div><div><div class="flex items-center gap-2"><span class="badge-rank" style="background:#fcf1de;color:#8a560f">06</span><b style="color:var(--brand);font-size:13px">Restructure Myntra</b></div>
+              <div class="text-[12.5px] text-[#475569] mt-1 leading-relaxed pl-7">Pause poor-ROAS SKUs; A+ content for kept assortment; pincode-level COD restriction.</div></div></div></div>
   </div>
 
-  <!-- Leakage control table -->
   <div class="card p-5 mt-4 card-hover">
     <div class="h-sec">
-      <div><div class="h-title">Leakage Control — Quantified Recovery Plan</div><div class="h-sub">Action × Mechanism × Recoverable revenue · monthly run-rate</div></div>
-      <span class="pill brand" style="background:var(--brand-50);color:var(--brand)">₹1.5 L recoverable / month</span>
+      <div><div class="h-title">Leakage Control — Quantified Recovery Plan</div>
+      <div class="h-sub">Action × Mechanism × Recoverable revenue · monthly run-rate</div></div>
+      <span class="pill brand" style="background:var(--brand-50);color:var(--brand)">₹17.41 L recoverable / month</span>
     </div>
-    <div class="scroll-x">
-    <table class="tbl">
-      <thead><tr>
-        <th>#</th><th>Leakage Source</th><th>Root Cause</th><th>GH Action</th>
-        <th class="num">Current Cost</th><th class="num">Recovery</th><th>Owner</th><th>Timeline</th>
-      </tr></thead>
-      <tbody>
-        <tr><td><span class="badge-rank">1</span></td><td><b>Flipkart RTO 57.7%</b></td><td>Tier-3 COD orders never delivered</td><td>Pincode-level COD throttle + prepaid nudges</td><td class="num">₹1,78,000</td><td class="num delta-pos">₹90,000</td><td>Ops · Logistics</td><td><span class="pill">T+30d</span></td></tr>
-        <tr><td><span class="badge-rank">2</span></td><td><b>Sizing-led CR (134 units)</b></td><td>Outdated size charts, no fit cues</td><td>Re-shoot fit, cm-grid, fit reviews surfaced</td><td class="num">₹2,04,000</td><td class="num delta-pos">₹66,000</td><td>Catalog · Brand</td><td><span class="pill">T+45d</span></td></tr>
-        <tr><td><span class="badge-rank">3</span></td><td><b>Slow-mover clearance</b></td><td>8 SKUs holding 1,200+ units · 35%+ return</td><td>Time-boxed markdown sprint on Myntra + Ajio</td><td class="num">₹1,20,000</td><td class="num delta-pos">₹48,000</td><td>Buying · Brand</td><td><span class="pill">T+30d</span></td></tr>
-        <tr><td><span class="badge-rank">4</span></td><td><b>Amazon CPU drag</b></td><td>Return 53%, RTO 50%</td><td>Pause bottom-quartile SKUs; restructure A+ + COD whitelist</td><td class="num">₹64,000</td><td class="num delta-pos">₹26,000</td><td>Marketplace · Brand</td><td><span class="pill">T+45d</span></td></tr>
-        <tr><td><span class="badge-rank">5</span></td><td><b>OOS demand loss</b></td><td>79 articles at zero inventory</td><td>Auto-replenishment trigger + safety-stock floor</td><td class="num">₹52,000</td><td class="num delta-pos">₹20,000</td><td>Supply Chain</td><td><span class="pill">T+60d</span></td></tr>
-        <tr><td><span class="badge-rank">6</span></td><td><b>Channel-mix imbalance</b></td><td>Over-indexed on Flipkart at low net rev</td><td>Re-allocate 20% paid budget → Ajio + Tatacliq</td><td class="num">—</td><td class="num delta-pos">₹1,20,000<br><span class="text-[10.5px] text-[#94a3b8]">incremental</span></td><td>Performance · GH</td><td><span class="pill">T+45d</span></td></tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-
-  <!-- 90-day roadmap -->
+    <div class="scroll-x"><table class="tbl">
+      <thead><tr><th>#</th><th>Leakage Source</th><th>Root Cause</th><th>GH Action</th>
+        <th class="num">Current Cost</th><th class="num">Recovery</th><th>Owner</th><th>Timeline</th></tr></thead><tbody><tr><td><span class="badge-rank">1</span></td><td><b>Myntra RTO 26.51%</b></td><td>Tier-3 COD orders never delivered</td><td>Pincode-level COD throttle + prepaid nudges</td><td class="num">₹10.55 L</td><td class="num delta-pos">₹5.27 L</td><td>Ops · Logistics</td><td><span class="pill">T+30d</span></td></tr><tr><td><span class="badge-rank">2</span></td><td><b>Sizing-led CR (1276 units)</b></td><td>Outdated size charts, no fit cues</td><td>Re-shoot fit, cm-grid, fit reviews surfaced</td><td class="num">₹21.16 L</td><td class="num delta-pos">₹10.58 L</td><td>Catalog · Brand</td><td><span class="pill">T+45d</span></td></tr><tr><td><span class="badge-rank">3</span></td><td><b>Slow-mover clearance</b></td><td>20 SKUs holding 100+ units · high return %</td><td>Time-boxed markdown sprint</td><td class="num">₹3.11 L</td><td class="num delta-pos">₹1.56 L</td><td>Buying · Brand</td><td><span class="pill">T+30d</span></td></tr><tr><td><span class="badge-rank">4</span></td><td><b>Myntra CPU drag</b></td><td>Return 22.43%, RTO 26.51%</td><td>Pause bottom-quartile SKUs; restructure A+ + COD whitelist</td><td class="num">₹17.74 L</td><td class="num delta-pos">₹7.09 L</td><td>Marketplace · Brand</td><td><span class="pill">T+45d</span></td></tr></tbody></table></div></div>
   <div class="card p-5 mt-4 card-hover">
-    <div class="h-sec">
-      <div><div class="h-title">90-Day Operating Roadmap</div><div class="h-sub">Sequenced, owner-tagged execution plan</div></div>
-    </div>
+    <div class="h-sec"><div><div class="h-title">90-Day Operating Roadmap</div>
+      <div class="h-sub">Sequenced, owner-tagged execution plan</div></div></div>
     <div class="grid grid-cols-12 gap-4 mt-3">
       <div class="col-span-12 xl:col-span-4 p-4 rounded-[14px]" style="background:#f7f2dd;border:1px solid #e9e0b8">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-[10.5px] tracking-[0.16em] uppercase font-bold" style="color:#8a560f">Sprint 1 · Days 1–30</div>
-            <div class="text-[15px] font-bold mt-1" style="color:var(--brand)">Stop the bleeding</div>
-          </div>
-          <span class="pill pill-warn">Now</span>
-        </div>
+        <div class="flex items-center justify-between"><div>
+          <div class="text-[10.5px] tracking-[0.16em] uppercase font-bold" style="color:#8a560f">Sprint 1 · Days 1–30</div>
+          <div class="text-[15px] font-bold mt-1" style="color:var(--brand)">Stop the bleeding</div>
+        </div><span class="pill pill-warn">Now</span></div>
         <ul class="mt-3 space-y-2 text-[12.5px] text-[#475569]" style="list-style:none;padding:0">
-          <li>◇ Activate Flipkart COD pincode throttle</li>
-          <li>◇ Launch markdown sprint on 8 slow-mover SKUs</li>
+          <li>◇ Activate Myntra COD pincode throttle</li>
+          <li>◇ Launch markdown sprint on top 20 slow-mover SKUs</li>
           <li>◇ Audit reverse logistics partner SLA</li>
-          <li>◇ Build daily RTO &amp; return tracker on Looker</li>
+          <li>◇ Build daily RTO &amp; return tracker</li>
           <li>◇ Implement OOS safety-stock floor</li>
-        </ul>
-      </div>
+        </ul></div>
       <div class="col-span-12 xl:col-span-4 p-4 rounded-[14px]" style="background:#eef3fb;border:1px solid #d8e3f1">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-[10.5px] tracking-[0.16em] uppercase font-bold" style="color:var(--brand)">Sprint 2 · Days 31–60</div>
-            <div class="text-[15px] font-bold mt-1" style="color:var(--brand)">Fix the catalog</div>
-          </div>
-          <span class="pill">Next</span>
-        </div>
+        <div class="flex items-center justify-between"><div>
+          <div class="text-[10.5px] tracking-[0.16em] uppercase font-bold" style="color:var(--brand)">Sprint 2 · Days 31–60</div>
+          <div class="text-[15px] font-bold mt-1" style="color:var(--brand)">Fix the catalog</div>
+        </div><span class="pill">Next</span></div>
         <ul class="mt-3 space-y-2 text-[12.5px] text-[#475569]" style="list-style:none;padding:0">
-          <li>◇ Re-shoot top 20 Kurta + Shirt SKUs on real models</li>
-          <li>◇ Roll out cm-grid size charts on Myntra + Flipkart</li>
+          <li>◇ Re-shoot top 20 Default SKUs on real models</li>
+          <li>◇ Roll out cm-grid size charts on top channels</li>
           <li>◇ Add fit videos to top-20 PDPs</li>
-          <li>◇ Restructure Amazon assortment &amp; A+ content</li>
-          <li>◇ Re-allocate 20% paid budget → Ajio + Tatacliq</li>
-        </ul>
-      </div>
+          <li>◇ Restructure assortment for high-return channels</li>
+          <li>◇ Re-allocate paid budget to low-return channels</li>
+        </ul></div>
       <div class="col-span-12 xl:col-span-4 p-4 rounded-[14px]" style="background:#e7f7f0;border:1px solid #b8e0cd">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-[10.5px] tracking-[0.16em] uppercase font-bold" style="color:#0a7d59">Sprint 3 · Days 61–90</div>
-            <div class="text-[15px] font-bold mt-1" style="color:var(--brand)">Scale what works</div>
-          </div>
-          <span class="pill pill-pos">Scale</span>
-        </div>
+        <div class="flex items-center justify-between"><div>
+          <div class="text-[10.5px] tracking-[0.16em] uppercase font-bold" style="color:#0a7d59">Sprint 3 · Days 61–90</div>
+          <div class="text-[15px] font-bold mt-1" style="color:var(--brand)">Scale what works</div>
+        </div><span class="pill pill-pos">Scale</span></div>
         <ul class="mt-3 space-y-2 text-[12.5px] text-[#475569]" style="list-style:none;padding:0">
-          <li>◇ 2× Ajio &amp; Tatacliq investment based on Sprint 2 read</li>
+          <li>◇ 2× investment in proven low-return channels</li>
           <li>◇ Launch fit-review incentive program</li>
-          <li>◇ Bring blended return % under 33%</li>
-          <li>◇ Lock-in AW25 buy plan informed by leakage data</li>
-          <li>◇ Quarterly MBR cadence with GH operating rhythm</li>
-        </ul>
-      </div>
+          <li>◇ Bring blended return % under 18%</li>
+          <li>◇ Lock-in next buy plan informed by leakage data</li>
+          <li>◇ Quarterly MBR cadence</li>
+        </ul></div>
     </div>
   </div>
 
-  <!-- Closing summary -->
   <div class="grid grid-cols-12 gap-4 mt-4">
     <div class="col-span-12 xl:col-span-7 insight insight-brand p-5">
-      <div class="flex items-center gap-2"><span class="pill brand">GH Recommendation</span><span class="text-[12.5px] text-[#475569]">Net upside if executed</span></div>
+      <div class="flex items-center gap-2"><span class="pill brand">GH Recommendation</span>
+      <span class="text-[12.5px] text-[#475569]">Net upside if executed</span></div>
       <div class="mt-2 text-[15px] font-bold leading-snug" style="color:var(--brand)">
-        Execution of Sprint 1 + Sprint 2 alone moves Net Realization from ₹6.18 L → ~₹7.70 L (+24.6%), with blended return % falling from 42.04% to ~33.5%.
+        Execution of Sprint 1 + Sprint 2 alone moves Net Realization from ₹1.10 Cr → ~₹1.45 Cr (+31.7%), with blended return % falling from 22.40% to ~17.92%.
       </div>
       <div class="text-[12.5px] mt-2 text-[#475569] leading-relaxed">
-        The plan is intentionally biased toward zero-incremental-spend levers (sizing, RTO, pincode hygiene) before scaling Ajio + Tatacliq. We expect operating cash flow to improve by ~₹1.5 L per month from Month 2 onward.
+        The plan is intentionally biased toward zero-incremental-spend levers (sizing, RTO, pincode hygiene) before scaling the low-return channels. We expect operating cash flow to improve by ~₹17.41 L per month from Month 2 onward.
       </div>
     </div>
     <div class="col-span-12 xl:col-span-5 card p-5 card-hover">
-      <div class="kpi-label">Projected Outcome · End of Q1 FY26</div>
+      <div class="kpi-label">Projected Outcome · End of Quarter</div>
       <div class="mt-3 space-y-2.5">
-        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Blended Return %</span><span class="num font-bold" style="color:var(--brand)">42.04% → 33.5%</span></div>
-        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Flipkart RTO %</span><span class="num font-bold" style="color:var(--brand)">57.7% → 38.0%</span></div>
-        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Net Realization</span><span class="num font-bold delta-pos">₹6.18 L → ₹7.70 L</span></div>
-        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Contribution Margin</span><span class="num font-bold delta-pos">14.6% → 18.2%</span></div>
-        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Ajio + Tatacliq mix</span><span class="num font-bold delta-pos">11.6% → 18%</span></div>
-        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Recoverable per month</span><span class="num font-bold" style="color:#0a7d59">₹1.50 L</span></div>
+        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Blended Return %</span><span class="num font-bold" style="color:var(--brand)">22.40% → 17.92%</span></div>
+        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Myntra RTO %</span><span class="num font-bold" style="color:var(--brand)">26.51% → 17.23%</span></div>
+        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Net Realization</span><span class="num font-bold delta-pos">₹1.10 Cr → ₹1.45 Cr</span></div>
+        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Contribution Margin</span><span class="num font-bold delta-pos">6.69% → 10.69%</span></div>
+        <div class="flex items-center justify-between text-[13px]"><span class="text-[#475569]">Recoverable per month</span><span class="num font-bold" style="color:#0a7d59">₹17.41 L</span></div>
       </div>
     </div>
   </div>
-
   <div class="text-center text-[11px] text-[#94a3b8] py-8 mt-2">
-    Identiti · Marketplace MBR Report · February 2025 · Generated 2026-05-29
+    Babli · Marketplace MBR Report · May 2026 · Generated 2026-06-01
   </div>
 </section>
-
 </main>
-
 <script>
-/* ------------- smooth scroll + scrollspy ------------- */
+const DATA = {"months_label": ["Mar 2026", "Apr 2026", "May 2026"], "ch_names": ["Myntra", "Amazon"], "ch_colors": ["#093C76", "#6c8fc4"], "trend_qty_data": {"Myntra": [0, 0, 10679], "Amazon": [0, 0, 44]}, "trend_rev_data": {"Myntra": [0, 0, 17735285], "Amazon": [0, 0, 45772]}, "donut_data": [{"name": "Myntra", "value": 17735285.0}, {"name": "Amazon", "value": 45772.1}], "wf_placeholder": [0, 13798020.715200972, 12004278.022224845, 11314376.986464797, 10969426.468584772, 0], "wf_values": [17781057.1, -3983036.38479903, -1793742.6929761264, -689901.0357600487, -344950.51788002433, 10969426.468584772], "wf_labels": ["Gross Revenue", "Returns", "Commission", "Logistics", "Other Fees", "Net Realization"], "wf_total_gross": 17781057.1, "wf_total_net": 10969426.468584772, "heatmap_rows": [[0, 0, 180], [0, 1, 193], [0, 2, 115], [0, 3, 1272], [1, 0, 1], [1, 1, 1], [1, 2, 0], [1, 3, 4]], "heatmap_channels": ["Myntra", "Amazon"], "heatmap_reasons": ["Catalog Issue", "Not Mentioned/Interested", "Quality Issue", "Sizing Issue"], "reason_donut": [{"name": "Catalog Issue", "value": 181}, {"name": "Not Mentioned/Interested", "value": 194}, {"name": "Quality Issue", "value": 115}, {"name": "Sizing Issue", "value": 1276}], "ret_rate_per_ch": [{"name": "Myntra", "data": [null, null, 22.43]}, {"name": "Amazon", "data": [null, null, 15.91]}], "chbar_names": ["Amazon", "Myntra"], "chbar_sale": [44, 10679], "chbar_ret": [7, 2395], "rto_cr_names": ["Myntra", "Amazon"], "rto_cr_rto": [635, 1], "rto_cr_cr": [1760, 6], "radar_channels": [{"name": "Myntra", "value": [100.0, 100.0, 77.6, 73.5, 100.0]}, {"name": "Amazon", "value": [0.4, 62.6, 84.1, 85.7, 0.3]}], "region_show": [{"name": "South", "qty": 2698, "revenue": 4388177.0}, {"name": "East", "qty": 1200, "revenue": 2038288.0}, {"name": "North", "qty": 2671, "revenue": 4600078.76}, {"name": "West", "qty": 3703, "revenue": 5979311.34}, {"name": "Central", "qty": 442, "revenue": 759878.0}, {"name": "Unknown", "qty": 9, "revenue": 15324.0}], "pareto_names": ["Sizing Issue", "Not Mentioned/Interested", "Catalog Issue", "Quality Issue"], "pareto_vals": [1276, 194, 181, 115], "pareto_cum": [72.3, 83.2, 93.5, 100.0], "sku_scatter_data": [[802309.0, 27.14, 409, "B-543"], [482254.0, 12.99, 308, "B-558"], [532277.0, 26.23, 305, "B-342"], [390033.0, 26.51, 249, "B-643"], [436506.0, 20.56, 248, "B-547"], [385806.0, 31.14, 228, "B-348"], [346176.0, 7.73, 220, "B-367"], [403104.0, 25.57, 219, "B-362"], [319040.0, 18.04, 194, "B-354"], [240574.0, 31.05, 190, "B-374"]], "cat_compare_names": ["Default"], "cat_compare_sale": [100.0], "cat_compare_ret": [22.39], "funnel_data": [{"value": 13125, "name": "Orders Placed (est.)"}, {"value": 11359, "name": "Shipped"}, {"value": 10723, "name": "Delivered"}, {"value": 8321, "name": "Net Retained"}, {"value": 636, "name": "RTO"}], "sla_data": [["Myntra", 97.2], ["Amazon", 98.4]], "depth_labels": ["\u2265 3 (Healthy)", "< 3 (Thin)", "Out of Stock"], "depth_articles": [444, 31, 5], "depth_units": [25597, 61, 0], "disc_names": ["0-10%"], "disc_sale": [10723], "disc_art": [480], "bench_scatter": [[22.43, 26.51, 10679, "Myntra"], [15.91, 14.29, 44, "Amazon"]], "index_data": [{"name": "Myntra", "value": 77.6}, {"name": "Amazon", "value": 84.1}], "asp_blended": 1658.2166464608786, "asp_channels": ["Myntra", "Amazon"], "asp_values": [1660.7627118644068, 1040.2749999999999], "gross_qty": 10723, "gross_revenue": 17781057.1, "topbar_titles": {"exec": "Executive Overview \u00b7 May 2026", "sales": "Sales Performance", "returns": "Returns & RTO Analytics", "channels": "Channel Performance", "region": "Region Analytics", "reasons": "Customer Return Reasons", "products": "Product Performance", "ops": "Operations Health", "inv": "Inventory & Fulfillment", "bench": "Marketplace Benchmarking", "insights": "GH Insights \u00b7 Closing Read-out"}};
+
 const NAV = Array.from(document.querySelectorAll('.nav-item'));
 const SECTIONS = NAV.map(n => document.getElementById(n.dataset.tgt)).filter(Boolean);
-const TOPBAR_TITLES = {
-  exec:'Executive Overview · February 2025',
-  sales:'Sales Performance',
-  returns:'Returns & RTO Analytics',
-  channels:'Channel Performance',
-  region:'Region Analytics',
-  reasons:'Customer Return Reasons',
-  products:'Product Performance',
-  ops:'Operations Health',
-  inv:'Inventory & Fulfillment',
-  bench:'Marketplace Benchmarking',
-  insights:'GH Insights · Closing Read-out'
-};
-const SPY_OFFSET = 120; // px below viewport top considered "current"
-
-let scrollLockedUntil = 0; // suppress spy while smooth-scrolling
-
-NAV.forEach(el=>{
-  el.addEventListener('click',()=>{
-    const id = el.dataset.tgt;
-    const tgt = document.getElementById(id);
-    if(!tgt) return;
-    const top = tgt.getBoundingClientRect().top + window.scrollY - 80;
-    setActive(id);                          // immediate highlight
-    scrollLockedUntil = Date.now() + 900;   // ignore spy for ~900ms while animating
-    window.scrollTo({top, behavior:'smooth'});
-  });
-});
-
+let scrollLockedUntil = 0;
+NAV.forEach(el=>{ el.addEventListener('click',()=>{
+  const id=el.dataset.tgt, tgt=document.getElementById(id); if(!tgt)return;
+  const top = tgt.getBoundingClientRect().top + window.scrollY - 80;
+  setActive(id); scrollLockedUntil = Date.now()+900;
+  window.scrollTo({top, behavior:'smooth'});
+});});
 function setActive(id){
   NAV.forEach(n=>n.classList.toggle('active', n.dataset.tgt===id));
-  const t = document.getElementById('topbar-section');
-  if(t && TOPBAR_TITLES[id]) t.textContent = TOPBAR_TITLES[id];
+  const t=document.getElementById('topbar-section');
+  if(t && DATA.topbar_titles[id]) t.textContent = DATA.topbar_titles[id];
 }
-
 function spy(){
   if(Date.now() < scrollLockedUntil) return;
-
-  // If we're near the bottom of the page, lock to last section
-  const nearBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
-  if(nearBottom){ setActive(SECTIONS[SECTIONS.length-1].id); return; }
-
-  // pick the last section whose top has crossed SPY_OFFSET
+  if((window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4)){
+    setActive(SECTIONS[SECTIONS.length-1].id); return;
+  }
   let current = SECTIONS[0].id;
   for(const s of SECTIONS){
     const top = s.getBoundingClientRect().top;
-    if(top - SPY_OFFSET <= 0){
-      current = s.id;
-    } else {
-      break;
-    }
+    if(top - 120 <= 0){ current = s.id; } else { break; }
   }
   setActive(current);
 }
+let ticking=false;
+window.addEventListener('scroll',()=>{ if(!ticking){requestAnimationFrame(()=>{spy();ticking=false;});ticking=true;}}, {passive:true});
+window.addEventListener('resize', spy); setActive('exec'); setTimeout(spy, 60);
 
-let ticking = false;
-window.addEventListener('scroll',()=>{
-  if(!ticking){
-    requestAnimationFrame(()=>{ spy(); ticking = false; });
-    ticking = true;
-  }
-},{passive:true});
-window.addEventListener('resize', spy);
-
-// initial
-setActive('exec');
-setTimeout(spy, 60);
-
-/* ------------- shared theme ------------- */
-const BRAND='#093C76', BRAND2='#3a6aa8', BRAND3='#6c8fc4', BRAND4='#9eb5d8', BRAND5='#d0d9e8';
-const POS='#0f9d6f', NEG='#d24545', WARN='#c47a1a', GOLD='#f5d769';
+const BRAND='#093C76',BRAND2='#3a6aa8',BRAND3='#6c8fc4',BRAND4='#9eb5d8',BRAND5='#d0d9e8';
+const POS='#0f9d6f',NEG='#d24545',WARN='#c47a1a',GOLD='#f5d769';
 const FONT='Helvetica, "Helvetica Neue", Arial, sans-serif';
-const TXT='#475569', INK='#0f172a';
-const CHANNELS=['Ajio','Amazon','Flipkart','Myntra','Tatacliq'];
-const CH_COLORS=[BRAND4, BRAND3, BRAND2, BRAND, '#b9c5dc'];
-
-const baseGrid = {left:48, right:24, top:30, bottom:36, containLabel:true};
-const baseTip = {trigger:'axis', backgroundColor:'#fff', borderColor:'#e7e3d3', borderWidth:1,
-  textStyle:{color:INK,fontFamily:FONT,fontSize:12}, padding:[8,10],
-  axisPointer:{type:'shadow', shadowStyle:{color:'rgba(9,60,118,0.06)'}}};
-const axisL = {color:'#94a3b8', fontFamily:FONT, fontSize:11};
-const splitL = {lineStyle:{color:'#eceadb', type:'solid'}};
+const TXT='#475569',INK='#0f172a';
+const baseGrid={left:48,right:24,top:30,bottom:36,containLabel:true};
+const baseTip={trigger:'axis',backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,
+  textStyle:{color:INK,fontFamily:FONT,fontSize:12},padding:[8,10],
+  axisPointer:{type:'shadow',shadowStyle:{color:'rgba(9,60,118,0.06)'}}};
+const axisL={color:'#94a3b8',fontFamily:FONT,fontSize:11};
+const splitL={lineStyle:{color:'#eceadb',type:'solid'}};
 const axisLine={lineStyle:{color:'#cfc9ad'}};
+function inrAxis(v){ return '₹'+(v/1000).toFixed(0)+'k'; }
+function inrTip(v){ return '₹'+Number(v).toLocaleString('en-IN'); }
+const _ec = id => document.getElementById(id) ? echarts.init(document.getElementById(id)) : null;
 
-/* ----------- 1a. Trend — Qty ----------- */
-echarts.init(document.getElementById('chart-trend-qty')).setOption({
-  tooltip:baseTip, grid:baseGrid, color:CH_COLORS,
+// 1a. Trend Qty
+if(_ec('chart-trend-qty')) _ec('chart-trend-qty').setOption({
+  tooltip:baseTip, grid:baseGrid, color:DATA.ch_colors,
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:14,icon:'roundRect'},
-  xAxis:{type:'category',data:['Dec 2024','Jan 2025','Feb 2025'],axisLine, axisLabel:axisL, axisTick:{show:false}},
+  xAxis:{type:'category',data:DATA.months_label,axisLine,axisLabel:axisL,axisTick:{show:false}},
   yAxis:{type:'value',name:'Units',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},axisLabel:axisL,splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
-  series:[
-    {name:'Ajio',type:'line',smooth:true,symbol:'circle',symbolSize:7,data:[0,0,72],lineStyle:{width:2.4}},
-    {name:'Amazon',type:'line',smooth:true,symbol:'circle',symbolSize:7,data:[0,0,79],lineStyle:{width:2.4}},
-    {name:'Flipkart',type:'line',smooth:true,symbol:'circle',symbolSize:7,data:[0,0,303],lineStyle:{width:2.4}},
-    {name:'Myntra',type:'line',smooth:true,symbol:'circle',symbolSize:8,data:[0,0,328],lineStyle:{width:3,shadowColor:'rgba(9,60,118,.3)',shadowBlur:6}},
-    {name:'Tatacliq',type:'line',smooth:true,symbol:'circle',symbolSize:7,data:[0,0,22],lineStyle:{width:2.4}}
-  ]
+  series: DATA.ch_names.map((n,i)=>({name:n,type:'line',smooth:true,symbol:'circle',symbolSize:7,
+    data: DATA.trend_qty_data[n] || [],lineStyle:{width:2.4}}))
 });
 
-/* ----------- 1b. Trend — Revenue ----------- */
-echarts.init(document.getElementById('chart-trend-rev')).setOption({
-  tooltip:{...baseTip, valueFormatter:v=>'₹'+Number(v).toLocaleString('en-IN')},
-  grid:baseGrid, color:CH_COLORS,
+// 1b. Trend Rev
+if(_ec('chart-trend-rev')) _ec('chart-trend-rev').setOption({
+  tooltip:{...baseTip,valueFormatter:inrTip}, grid:baseGrid, color:DATA.ch_colors,
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:14,icon:'roundRect'},
-  xAxis:{type:'category',data:['Dec 2024','Jan 2025','Feb 2025'],axisLine, axisLabel:axisL, axisTick:{show:false}},
-  yAxis:{type:'value',name:'INR',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},axisLabel:{...axisL,formatter:v=>'₹'+(v/1000).toFixed(0)+'k'},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
-  series:[
-    {name:'Ajio',type:'line',smooth:true,symbol:'circle',symbolSize:7,data:[0,0,110128],lineStyle:{width:2.4}},
-    {name:'Amazon',type:'line',smooth:true,symbol:'circle',symbolSize:7,data:[0,0,120623],lineStyle:{width:2.4}},
-    {name:'Flipkart',type:'line',smooth:true,symbol:'circle',symbolSize:7,data:[0,0,456337],lineStyle:{width:2.4}},
-    {name:'Myntra',type:'line',smooth:true,symbol:'circle',symbolSize:8,data:[0,0,511962],lineStyle:{width:3,shadowColor:'rgba(9,60,118,.3)',shadowBlur:6}},
-    {name:'Tatacliq',type:'line',smooth:true,symbol:'circle',symbolSize:7,data:[0,0,32487],lineStyle:{width:2.4}}
-  ]
+  xAxis:{type:'category',data:DATA.months_label,axisLine,axisLabel:axisL,axisTick:{show:false}},
+  yAxis:{type:'value',name:'INR',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},axisLabel:{...axisL,formatter:inrAxis},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
+  series: DATA.ch_names.map(n=>({name:n,type:'line',smooth:true,symbol:'circle',symbolSize:7,
+    data: DATA.trend_rev_data[n] || [],lineStyle:{width:2.4}}))
 });
 
-/* ----------- 2. Donut ----------- */
-echarts.init(document.getElementById('chart-donut')).setOption({
-  tooltip:{trigger:'item',backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{color:INK,fontFamily:FONT,fontSize:12},formatter:'{b}<br/><b>₹{c}</b> · {d}%'},
+// 2. Donut
+if(_ec('chart-donut')) _ec('chart-donut').setOption({
+  tooltip:{trigger:'item',backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{color:INK,fontFamily:FONT,fontSize:12},formatter:p=>`${p.name}<br/><b>₹${Number(p.value).toLocaleString('en-IN')}</b> · ${p.percent}%`},
   color:[BRAND,BRAND2,BRAND3,BRAND4,BRAND5],
-  series:[{
-    type:'pie',radius:['58%','82%'],center:['50%','50%'],
-    label:{show:true,position:'center',formatter:'{a|₹12.32L}\n{b|Gross Rev}',
+  series:[{type:'pie',radius:['58%','82%'],center:['50%','50%'],
+    label:{show:true,position:'center',formatter:'{a|'+(DATA.gross_revenue>=10000000?'₹'+(DATA.gross_revenue/10000000).toFixed(2)+'Cr':'₹'+(DATA.gross_revenue/100000).toFixed(2)+'L')+'}\n{b|Gross Rev}',
       rich:{a:{fontSize:22,fontWeight:700,color:BRAND,fontFamily:FONT},b:{fontSize:11,color:TXT,fontFamily:FONT,padding:[6,0,0,0]}}},
-    labelLine:{show:false},
-    itemStyle:{borderColor:'#fff',borderWidth:3,borderRadius:4},
-    data:[
-      {name:'Myntra',value:511962},{name:'Flipkart',value:456337},
-      {name:'Amazon',value:120623},{name:'Ajio',value:110128},{name:'Tatacliq',value:32487}
-    ]
+    labelLine:{show:false},itemStyle:{borderColor:'#fff',borderWidth:3,borderRadius:4},
+    data: DATA.donut_data
   }]
 });
 
-/* ----------- 3. Waterfall ----------- */
-const wfTotals = ['Gross Sales','Returns','Commission','Logistics','Other Fees','Net Realization'];
-echarts.init(document.getElementById('chart-waterfall')).setOption({
-  tooltip:baseTip, grid:baseGrid,
-  xAxis:{type:'category',data:wfTotals,axisLine,axisLabel:{...axisL,fontSize:11,interval:0}, axisTick:{show:false}},
+// 3. Waterfall
+if(_ec('chart-waterfall')) _ec('chart-waterfall').setOption({
+  tooltip:baseTip,grid:baseGrid,
+  xAxis:{type:'category',data:DATA.wf_labels,axisLine,axisLabel:{...axisL,fontSize:11,interval:0},axisTick:{show:false}},
   yAxis:{type:'value',axisLabel:{...axisL,formatter:v=>'₹'+(v/100000).toFixed(1)+'L'},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
   series:[
-    {name:'Placeholder',type:'bar',stack:'wf',itemStyle:{color:'transparent'},
-      emphasis:{itemStyle:{color:'transparent'}},
-      data:[0,714000,532000,452000,400000,0]},
-    {name:'Value',type:'bar',stack:'wf',barWidth:'50%',
-      itemStyle:{borderRadius:[6,6,0,0],
-        color:p=>{
-          const m=[BRAND,NEG,NEG,NEG,NEG,POS]; return m[p.dataIndex];
-        }},
+    {name:'p',type:'bar',stack:'wf',itemStyle:{color:'transparent'},emphasis:{itemStyle:{color:'transparent'}},data:DATA.wf_placeholder},
+    {name:'v',type:'bar',stack:'wf',barWidth:'50%',
+      itemStyle:{borderRadius:[6,6,0,0],color:p=>{const m=[BRAND,NEG,NEG,NEG,NEG,POS];return m[p.dataIndex];}},
       label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11,
-        formatter:p=>{const v=[1231537,-518000,-80000,-52000,-52000,618000][p.dataIndex];
-          return (v<0?'−':'+')+'₹'+(Math.abs(v)/100000).toFixed(2)+'L';}},
-      data:[1231537,518000,80000,52000,52000,618000]}
+        formatter:p=>{const v=DATA.wf_values[p.dataIndex];return (v<0?'−':'+')+'₹'+(Math.abs(v)/100000).toFixed(2)+'L';}},
+      data:DATA.wf_values.map(Math.abs)}
   ]
 });
 
-/* ----------- 4. Heatmap ----------- */
-const reasons=['Sizing','Quality','Wrong Item','Catalog','Other'];
-const chs=['Myntra','Flipkart','Amazon','Ajio','Tatacliq'];
-const hmData=[
-  // [x,y,value]
-  [0,0,96],[1,0,29],[2,0,5],[3,0,4],[4,0,0],
-  [0,1,18],[1,1,3],[2,1,2],[3,1,1],[4,1,0],
-  [0,2,2],[1,2,1],[2,2,1],[3,2,0],[4,2,0],
-  [0,3,7],[1,3,3],[2,3,2],[3,3,0],[4,3,0],
-  [0,4,11],[1,4,1],[2,4,1],[3,4,0],[4,4,0]
-];
-echarts.init(document.getElementById('chart-heatmap')).setOption({
-  tooltip:{position:'top',backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{fontFamily:FONT,color:INK,fontSize:12}},
-  grid:{left:80,right:20,top:30,bottom:70,containLabel:true},
-  xAxis:{type:'category',data:chs,splitArea:{show:true},axisLabel:axisL,axisLine,axisTick:{show:false}},
-  yAxis:{type:'category',data:reasons,splitArea:{show:true},axisLabel:axisL,axisLine:{show:false},axisTick:{show:false}},
-  visualMap:{min:0,max:100,calculable:false,orient:'horizontal',left:'center',bottom:0,
+// 4. Heatmap
+if(_ec('chart-heatmap')) _ec('chart-heatmap').setOption({
+  tooltip:{position:'top',backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{fontFamily:FONT,color:INK,fontSize:12},
+    formatter:p=>DATA.heatmap_channels[p.value[0]]+' × '+DATA.heatmap_reasons[p.value[1]]+'<br/><b>'+p.value[2]+' returns</b>'},
+  grid:{left:120,right:20,top:30,bottom:70,containLabel:true},
+  xAxis:{type:'category',data:DATA.heatmap_channels,splitArea:{show:true},axisLabel:axisL,axisLine,axisTick:{show:false}},
+  yAxis:{type:'category',data:DATA.heatmap_reasons,splitArea:{show:true},axisLabel:axisL,axisLine:{show:false},axisTick:{show:false}},
+  visualMap:{min:0,max:Math.max(1,...DATA.heatmap_rows.map(r=>r[2])),calculable:false,orient:'horizontal',left:'center',bottom:0,
     textStyle:{color:TXT,fontFamily:FONT,fontSize:11},
     inRange:{color:['#f6f3e3','#cdd9ec','#7b9bcb','#3a6aa8','#093C76']}},
-  series:[{name:'returns',type:'heatmap',data:hmData,
-    label:{show:true,fontFamily:FONT,fontSize:11,fontWeight:600,color:'#fff',
-      formatter:p=>p.value[2]===0?'·':p.value[2]},
+  series:[{name:'returns',type:'heatmap',data:DATA.heatmap_rows,
+    label:{show:true,fontFamily:FONT,fontSize:11,fontWeight:600,color:'#fff',formatter:p=>p.value[2]===0?'·':p.value[2]},
     itemStyle:{borderColor:'#fff',borderWidth:2,borderRadius:6}}]
 });
 
-/* ----------- 5. Rev trend (sales page) ----------- */
-echarts.init(document.getElementById('chart-rev-trend')).setOption({
-  tooltip:baseTip, grid:baseGrid, color:CH_COLORS,
+// 5. Rev trend (sales)
+if(_ec('chart-rev-trend')) _ec('chart-rev-trend').setOption({
+  tooltip:{...baseTip,valueFormatter:inrTip},grid:baseGrid,color:DATA.ch_colors,
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:16,icon:'roundRect'},
-  xAxis:{type:'category',data:['Dec 2024','Jan 2025','Feb 2025'],axisLine,axisLabel:axisL,axisTick:{show:false}},
-  yAxis:{type:'value',axisLabel:{...axisL,formatter:v=>'₹'+(v/1000).toFixed(0)+'k'},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
-  series:CHANNELS.map((n,i)=>({
-    name:n,type:'line',smooth:true,symbol:'circle',symbolSize:7,
-    areaStyle:{opacity:.06},lineStyle:{width:2.4},
-    data:[0,0,[110128,120623,456337,511962,32487][i]]
-  }))
+  xAxis:{type:'category',data:DATA.months_label,axisLine,axisLabel:axisL,axisTick:{show:false}},
+  yAxis:{type:'value',axisLabel:{...axisL,formatter:inrAxis},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
+  series:DATA.ch_names.map(n=>({name:n,type:'line',smooth:true,symbol:'circle',symbolSize:7,areaStyle:{opacity:.06},lineStyle:{width:2.4},data:DATA.trend_rev_data[n]||[]}))
 });
 
-/* ----------- 6. Category mix donut ----------- */
-echarts.init(document.getElementById('chart-cat-mix')).setOption({
+// 6. Category mix
+if(_ec('chart-cat-mix')) _ec('chart-cat-mix').setOption({
   tooltip:{trigger:'item',backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{color:INK,fontFamily:FONT,fontSize:12},formatter:'{b}<br/>{c} qty · {d}%'},
-  color:[BRAND,BRAND2,BRAND3,BRAND4],
+  color:[BRAND,BRAND2,BRAND3,BRAND4,BRAND5],
   series:[{type:'pie',radius:['56%','82%'],center:['50%','50%'],
-    label:{show:true,position:'center',formatter:'{a|804}\n{b|Total Qty}',
+    label:{show:true,position:'center',formatter:'{a|'+DATA.gross_qty+'}\n{b|Total Qty}',
       rich:{a:{fontSize:22,fontWeight:700,color:BRAND,fontFamily:FONT},b:{fontSize:11,color:TXT,fontFamily:FONT,padding:[4,0,0,0]}}},
-    labelLine:{show:false},
-    itemStyle:{borderColor:'#fff',borderWidth:3,borderRadius:4},
-    data:[{name:'Kurta',value:602},{name:'Shirt',value:148},{name:'Kurti',value:37},{name:'Flatknits',value:3}]
+    labelLine:{show:false},itemStyle:{borderColor:'#fff',borderWidth:3,borderRadius:4},
+    data:DATA.cat_compare_names.map((n,i)=>({name:n,value:DATA.cat_compare_sale[i]}))
   }]
 });
 
-/* ----------- 7. ASP bar ----------- */
-echarts.init(document.getElementById('chart-asp')).setOption({
-  tooltip:baseTip, grid:baseGrid,
-  xAxis:{type:'category',data:['Myntra','Amazon','Ajio','Flipkart','Tatacliq'],axisLabel:axisL,axisLine,axisTick:{show:false}},
+// 7. ASP bar
+if(_ec('chart-asp')) _ec('chart-asp').setOption({
+  tooltip:baseTip,grid:baseGrid,
+  xAxis:{type:'category',data:DATA.asp_channels,axisLabel:axisL,axisLine,axisTick:{show:false}},
   yAxis:{type:'value',axisLabel:{...axisL,formatter:v=>'₹'+v},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
-  series:[{
-    name:'ASP',type:'bar',barWidth:'40%',
-    itemStyle:{color:p=>p.value>=1532?BRAND:BRAND3,borderRadius:[6,6,0,0]},
-    label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11,formatter:'₹{c}'},
-    markLine:{symbol:'none',label:{formatter:'Blended ₹1,532',color:WARN,fontFamily:FONT,fontSize:11},lineStyle:{color:WARN,type:'dashed',width:1.4},data:[{yAxis:1532}]},
-    data:[1561,1527,1530,1506,1477]
+  series:[{name:'ASP',type:'bar',barWidth:'40%',
+    itemStyle:{color:p=>p.value>=DATA.asp_blended?BRAND:BRAND3,borderRadius:[6,6,0,0]},
+    label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11,formatter:p=>'₹'+Math.round(p.value)},
+    markLine:{symbol:'none',label:{formatter:'Blended ₹'+Math.round(DATA.asp_blended),color:WARN,fontFamily:FONT,fontSize:11},lineStyle:{color:WARN,type:'dashed',width:1.4},data:[{yAxis:DATA.asp_blended}]},
+    data:DATA.asp_values
   }]
 });
 
-/* ----------- 8. RTO vs CR stacked ----------- */
-echarts.init(document.getElementById('chart-rto-cr')).setOption({
-  tooltip:baseTip, grid:baseGrid,
+// 8. RTO vs CR
+if(_ec('chart-rto-cr')) _ec('chart-rto-cr').setOption({
+  tooltip:baseTip,grid:baseGrid,
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:16,icon:'roundRect'},
-  xAxis:{type:'category',data:['Myntra','Flipkart','Amazon','Ajio','Tatacliq'],axisLabel:axisL,axisLine,axisTick:{show:false}},
+  xAxis:{type:'category',data:DATA.rto_cr_names,axisLabel:axisL,axisLine,axisTick:{show:false}},
   yAxis:{type:'value',axisLabel:axisL,splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
   series:[
-    {name:'RTO',type:'bar',stack:'r',barWidth:'42%',
-      itemStyle:{color:WARN,borderRadius:[0,0,0,0]},data:[39,86,21,5,0]},
-    {name:'Customer Return',type:'bar',stack:'r',barWidth:'42%',
-      itemStyle:{color:NEG,borderRadius:[6,6,0,0]},data:[96,63,21,7,0],
+    {name:'RTO',type:'bar',stack:'r',barWidth:'42%',itemStyle:{color:WARN},data:DATA.rto_cr_rto},
+    {name:'Customer Return',type:'bar',stack:'r',barWidth:'42%',itemStyle:{color:NEG,borderRadius:[6,6,0,0]},data:DATA.rto_cr_cr,
       label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11,
-        formatter:p=>[135,149,42,12,0][p.dataIndex]}}
+        formatter:p=>(DATA.rto_cr_rto[p.dataIndex]||0) + (DATA.rto_cr_cr[p.dataIndex]||0)}}
   ]
 });
 
-/* ----------- 9. Reasons donut ----------- */
-echarts.init(document.getElementById('chart-reasons')).setOption({
+// 9. Reasons donut
+if(_ec('chart-reasons')) _ec('chart-reasons').setOption({
   tooltip:{trigger:'item',backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{color:INK,fontFamily:FONT,fontSize:12},formatter:'{b}<br/>{c} returns · {d}%'},
   color:[NEG,WARN,BRAND3,BRAND4,BRAND5],
   series:[{type:'pie',radius:['55%','82%'],
-    label:{show:true,position:'center',formatter:'{a|187}\n{b|Cust. Returns}',
+    label:{show:true,position:'center',formatter:'{a|'+(DATA.reason_donut.reduce((a,b)=>a+b.value,0))+'}\n{b|Cust. Returns}',
       rich:{a:{fontSize:22,fontWeight:700,color:BRAND,fontFamily:FONT},b:{fontSize:11,color:TXT,fontFamily:FONT,padding:[4,0,0,0]}}},
-    labelLine:{show:false},
-    itemStyle:{borderColor:'#fff',borderWidth:3,borderRadius:4},
-    data:[
-      {name:'Sizing Issue',value:134},
-      {name:'Quality Issue',value:24},
-      {name:'Not Mentioned',value:13},
-      {name:'Catalog Issue',value:12},
-      {name:'Wrong Item',value:4}
-    ]
+    labelLine:{show:false},itemStyle:{borderColor:'#fff',borderWidth:3,borderRadius:4},
+    data:DATA.reason_donut
   }]
 });
 
-/* ----------- 10. Return rate trajectory ----------- */
-echarts.init(document.getElementById('chart-ret-trend')).setOption({
-  tooltip:baseTip, grid:baseGrid, color:CH_COLORS,
+// 10. Return rate trajectory
+if(_ec('chart-ret-trend')) _ec('chart-ret-trend').setOption({
+  tooltip:baseTip,grid:baseGrid,color:DATA.ch_colors,
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:16,icon:'roundRect'},
-  xAxis:{type:'category',data:['Dec 2024','Jan 2025','Feb 2025'],axisLine,axisLabel:axisL,axisTick:{show:false}},
+  xAxis:{type:'category',data:DATA.months_label,axisLine,axisLabel:axisL,axisTick:{show:false}},
   yAxis:{type:'value',axisLabel:{...axisL,formatter:'{value}%'},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
-  series:[
-    {name:'Myntra',type:'line',smooth:true,symbolSize:7,data:[null,null,41.16]},
-    {name:'Flipkart',type:'line',smooth:true,symbolSize:7,data:[null,null,49.17]},
-    {name:'Amazon',type:'line',smooth:true,symbolSize:7,data:[null,null,53.16]},
-    {name:'Ajio',type:'line',smooth:true,symbolSize:7,data:[null,null,16.67]},
-    {name:'Tatacliq',type:'line',smooth:true,symbolSize:7,data:[null,null,0]}
-  ]
+  series:DATA.ret_rate_per_ch.map(o=>({name:o.name,type:'line',smooth:true,symbolSize:7,data:o.data,connectNulls:false}))
 });
 
-/* ----------- 11. Channel bars: sale vs return ----------- */
-echarts.init(document.getElementById('chart-ch-bars')).setOption({
-  tooltip:baseTip, grid:{...baseGrid,left:80},
+// 11. Channel bars (horizontal)
+if(_ec('chart-ch-bars')) _ec('chart-ch-bars').setOption({
+  tooltip:baseTip,grid:{...baseGrid,left:80},
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:16,icon:'roundRect'},
   xAxis:{type:'value',axisLabel:axisL,splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
-  yAxis:{type:'category',data:['Tatacliq','Ajio','Amazon','Flipkart','Myntra'],axisLabel:{...axisL,fontWeight:600,color:INK},axisLine,axisTick:{show:false}},
+  yAxis:{type:'category',data:DATA.chbar_names,axisLabel:{...axisL,fontWeight:600,color:INK},axisLine,axisTick:{show:false}},
   series:[
-    {name:'Sale',type:'bar',barWidth:14,itemStyle:{color:BRAND,borderRadius:[0,4,4,0]},data:[22,72,79,303,328]},
-    {name:'Return',type:'bar',barWidth:14,itemStyle:{color:NEG,borderRadius:[0,4,4,0]},data:[0,12,42,149,135]}
+    {name:'Sale',type:'bar',barWidth:14,itemStyle:{color:BRAND,borderRadius:[0,4,4,0]},data:DATA.chbar_sale},
+    {name:'Return',type:'bar',barWidth:14,itemStyle:{color:NEG,borderRadius:[0,4,4,0]},data:DATA.chbar_ret}
   ]
 });
 
-/* ----------- 12. Radar ----------- */
-echarts.init(document.getElementById('chart-radar')).setOption({
+// 12. Radar
+if(_ec('chart-radar')) _ec('chart-radar').setOption({
   tooltip:{backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{color:INK,fontFamily:FONT,fontSize:12}},
-  radar:{
-    indicator:[
-      {name:'Sale Vol',max:100},{name:'ASP',max:100},
-      {name:'Low Return %',max:100},{name:'Low RTO %',max:100},{name:'Net Rev',max:100}
-    ],
-    radius:'66%',center:['50%','52%'],
-    axisName:{color:TXT,fontFamily:FONT,fontSize:11},
-    splitLine:{lineStyle:{color:'#e7e3d3'}},
-    splitArea:{areaStyle:{color:['#fffce6','#fff']}},
-    axisLine:{lineStyle:{color:'#e7e3d3'}}
-  },
+  radar:{indicator:[{name:'Sale Vol',max:100},{name:'ASP',max:100},{name:'Low Return %',max:100},{name:'Low RTO %',max:100},{name:'Net Rev',max:100}],
+    radius:'66%',center:['50%','52%'],axisName:{color:TXT,fontFamily:FONT,fontSize:11},
+    splitLine:{lineStyle:{color:'#e7e3d3'}},splitArea:{areaStyle:{color:['#fffce6','#fff']}},axisLine:{lineStyle:{color:'#e7e3d3'}}},
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:14,icon:'roundRect'},
-  series:[{type:'radar',data:[
-    {name:'Myntra',value:[100,100,59,71,82],itemStyle:{color:BRAND},areaStyle:{opacity:.18},lineStyle:{width:2}},
-    {name:'Flipkart',value:[92,72,51,42,75],itemStyle:{color:BRAND2},areaStyle:{opacity:.14},lineStyle:{width:2}},
-    {name:'Ajio',value:[22,77,83,58,30],itemStyle:{color:POS},areaStyle:{opacity:.14},lineStyle:{width:2}}
-  ]}]
+  series:[{type:'radar',data:DATA.radar_channels.map((c,i)=>({name:c.name,value:c.value,
+    itemStyle:{color:[BRAND,BRAND2,POS][i]},areaStyle:{opacity:.16},lineStyle:{width:2}}))}]
 });
 
-/* ----------- 13. Region bars ----------- */
-echarts.init(document.getElementById('chart-region-bars')).setOption({
-  tooltip:baseTip, grid:baseGrid,
+// 13. Region bars
+if(_ec('chart-region-bars')) _ec('chart-region-bars').setOption({
+  tooltip:baseTip,grid:baseGrid,
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:16,icon:'roundRect'},
-  xAxis:{type:'category',data:['South','East','North','West','Central'],axisLabel:axisL,axisLine,axisTick:{show:false}},
+  xAxis:{type:'category',data:DATA.region_show.map(r=>r.name),axisLabel:axisL,axisLine,axisTick:{show:false}},
   yAxis:[
     {type:'value',name:'Qty',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},axisLabel:axisL,splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
-    {type:'value',name:'Revenue',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},axisLabel:{...axisL,formatter:v=>'₹'+(v/1000).toFixed(0)+'k'},splitLine:{show:false},axisLine:{show:false},axisTick:{show:false}}
+    {type:'value',name:'Revenue',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},axisLabel:{...axisL,formatter:inrAxis},splitLine:{show:false},axisLine:{show:false},axisTick:{show:false}}
   ],
   series:[
-    {name:'Qty',type:'bar',barWidth:'36%',itemStyle:{color:BRAND3,borderRadius:[6,6,0,0]},data:[281,155,118,119,59]},
-    {name:'Revenue',type:'line',yAxisIndex:1,smooth:true,symbolSize:8,itemStyle:{color:GOLD},lineStyle:{width:3,color:GOLD},
-      data:[427545,236372,185979,181900,89614]}
+    {name:'Qty',type:'bar',barWidth:'36%',itemStyle:{color:BRAND3,borderRadius:[6,6,0,0]},data:DATA.region_show.map(r=>r.qty),
+     label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11}},
+    {name:'Revenue',type:'line',yAxisIndex:1,smooth:true,symbolSize:8,itemStyle:{color:GOLD},lineStyle:{width:3,color:GOLD},data:DATA.region_show.map(r=>r.revenue)}
   ]
 });
 
-/* ----------- 14. Region donut ----------- */
-echarts.init(document.getElementById('chart-region-donut')).setOption({
-  tooltip:{trigger:'item',backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{color:INK,fontFamily:FONT,fontSize:12},formatter:'{b}<br/>₹{c} · {d}%'},
-  color:[BRAND,BRAND2,BRAND3,BRAND4,BRAND5],
+// 14. Region donut
+if(_ec('chart-region-donut')) _ec('chart-region-donut').setOption({
+  tooltip:{trigger:'item',backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{color:INK,fontFamily:FONT,fontSize:12},formatter:p=>p.name+'<br/>'+inrTip(p.value)+' · '+p.percent+'%'},
+  color:[BRAND,BRAND2,BRAND3,BRAND4,BRAND5,'#b9c5dc'],
   series:[{type:'pie',radius:['55%','82%'],
-    label:{show:true,position:'center',formatter:'{a|₹11.21L}\n{b|Regional Rev}',
+    label:{show:true,position:'center',formatter:'{a|'+(()=>{const t=DATA.region_show.reduce((a,b)=>a+b.revenue,0);return t>=10000000?'₹'+(t/10000000).toFixed(2)+'Cr':'₹'+(t/100000).toFixed(2)+'L';})()+'}\n{b|Regional Rev}',
       rich:{a:{fontSize:20,fontWeight:700,color:BRAND,fontFamily:FONT},b:{fontSize:11,color:TXT,fontFamily:FONT,padding:[4,0,0,0]}}},
     labelLine:{show:false},itemStyle:{borderColor:'#fff',borderWidth:3,borderRadius:4},
-    data:[
-      {name:'South',value:427545},{name:'East',value:236372},
-      {name:'North',value:185979},{name:'West',value:181900},{name:'Central',value:89614}
-    ]
+    data:DATA.region_show.map(r=>({name:r.name,value:r.revenue}))
   }]
 });
 
-/* ----------- 15. Pareto ----------- */
-echarts.init(document.getElementById('chart-pareto')).setOption({
-  tooltip:baseTip, grid:baseGrid,
+// 15. Pareto
+if(_ec('chart-pareto')) _ec('chart-pareto').setOption({
+  tooltip:baseTip,grid:baseGrid,
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:16,icon:'roundRect'},
-  xAxis:{type:'category',data:['Sizing Issue','Quality Issue','Not Mentioned','Catalog Issue','Wrong Item'],axisLabel:{...axisL,interval:0,fontSize:11},axisLine,axisTick:{show:false}},
+  xAxis:{type:'category',data:DATA.pareto_names,axisLabel:{...axisL,interval:0,fontSize:10,rotate:DATA.pareto_names.some(n=>n.length>14)?-15:0},axisLine,axisTick:{show:false}},
   yAxis:[
     {type:'value',axisLabel:axisL,splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
     {type:'value',max:100,axisLabel:{...axisL,formatter:'{value}%'},splitLine:{show:false},axisLine:{show:false},axisTick:{show:false}}
@@ -1402,217 +992,116 @@ echarts.init(document.getElementById('chart-pareto')).setOption({
   series:[
     {name:'Returns',type:'bar',barWidth:'40%',
       itemStyle:{color:p=>p.dataIndex===0?NEG:BRAND,borderRadius:[6,6,0,0]},
-      label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11},
-      data:[134,24,13,12,4]},
-    {name:'Cumulative %',type:'line',yAxisIndex:1,smooth:true,symbolSize:7,itemStyle:{color:GOLD},lineStyle:{width:3,color:GOLD},
-      data:[71.7,84.5,91.5,97.9,100]}
+      label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11},data:DATA.pareto_vals},
+    {name:'Cumulative %',type:'line',yAxisIndex:1,smooth:true,symbolSize:7,itemStyle:{color:GOLD},lineStyle:{width:3,color:GOLD},data:DATA.pareto_cum}
   ]
 });
 
-/* ----------- 16. SKU scatter ----------- */
-const topSku=[
-  ['108-99258-43',115883,35.90,78],
-  ['108-4652N-93',67118,0,45],
-  ['108-4652N-01',41740,0,28],
-  ['108-71638-44',41329,42.31,26],
-  ['108-99258-44',35894,20.83,24],
-  ['551-6614N-50',28014,0,20],
-  ['108-99258-19',30009,25.00,20],
-  ['108-4652N-27',28453,0,19],
-  ['108-4652N-43',23825,33.33,18],
-  ['108-3120S-02',28881,29.41,17]
-];
-echarts.init(document.getElementById('chart-sku-scatter')).setOption({
+// 16. SKU scatter
+if(_ec('chart-sku-scatter')) _ec('chart-sku-scatter').setOption({
   tooltip:{backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{color:INK,fontFamily:FONT,fontSize:12},
-    formatter:p=>`<b>${p.data[4]}</b><br/>Revenue: ₹${p.data[1].toLocaleString()}<br/>Units: ${p.data[3]}<br/>Return %: ${p.data[2]}%`},
+    formatter:p=>`<b>${p.data[3]}</b><br/>Revenue: ₹${Number(p.data[0]).toLocaleString('en-IN')}<br/>Units: ${p.data[2]}<br/>Return %: ${p.data[1]}%`},
   grid:baseGrid,
   xAxis:{name:'Revenue (₹)',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},
-    type:'value',axisLabel:{...axisL,formatter:v=>'₹'+(v/1000).toFixed(0)+'k'},splitLine:splitL,axisLine,axisTick:{show:false}},
+    type:'value',axisLabel:{...axisL,formatter:inrAxis},splitLine:splitL,axisLine,axisTick:{show:false}},
   yAxis:{name:'Return %',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},
-    type:'value',max:60,axisLabel:{...axisL,formatter:'{value}%'},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
-  series:[{
-    type:'scatter',symbolSize:p=>10+p[3]*0.8,
-    itemStyle:{color:p=>p.data[2]>35?NEG:p.data[2]>15?WARN:POS,opacity:.85,borderColor:'#fff',borderWidth:2},
-    data: topSku.map(r=>[r[1],r[2],null,r[3],r[0]]),
-    label:{show:true,position:'right',color:TXT,fontFamily:FONT,fontSize:10,formatter:p=>p.data[4]}
+    type:'value',max:100,axisLabel:{...axisL,formatter:'{value}%'},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
+  series:[{type:'scatter',symbolSize:p=>10+Math.sqrt(p[2])*2,
+    itemStyle:{color:p=>p.data[1]>35?NEG:p.data[1]>15?WARN:POS,opacity:.85,borderColor:'#fff',borderWidth:2},
+    data:DATA.sku_scatter_data,
+    label:{show:true,position:'right',color:TXT,fontFamily:FONT,fontSize:10,formatter:p=>p.data[3]}
   }]
 });
 
-/* ----------- 17. Category compare ----------- */
-echarts.init(document.getElementById('chart-cat-compare')).setOption({
-  tooltip:baseTip, grid:baseGrid,
+// 17. Cat compare
+if(_ec('chart-cat-compare')) _ec('chart-cat-compare').setOption({
+  tooltip:baseTip,grid:baseGrid,
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:16,icon:'roundRect'},
-  xAxis:{type:'category',data:['Kurta','Shirt','Kurti','Flatknits'],axisLabel:axisL,axisLine,axisTick:{show:false}},
+  xAxis:{type:'category',data:DATA.cat_compare_names,axisLabel:axisL,axisLine,axisTick:{show:false}},
   yAxis:{type:'value',axisLabel:{...axisL,formatter:'{value}%'},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
   series:[
-    {name:'Sale %',type:'bar',barWidth:18,itemStyle:{color:BRAND,borderRadius:[6,6,0,0]},data:[76.2,18.73,4.68,0.38]},
-    {name:'Return %',type:'bar',barWidth:18,itemStyle:{color:NEG,borderRadius:[6,6,0,0]},data:[40.2,51.35,40.54,33.33]}
+    {name:'Sale %',type:'bar',barWidth:18,itemStyle:{color:BRAND,borderRadius:[6,6,0,0]},data:DATA.cat_compare_sale},
+    {name:'Return %',type:'bar',barWidth:18,itemStyle:{color:NEG,borderRadius:[6,6,0,0]},data:DATA.cat_compare_ret}
   ]
 });
 
-/* ----------- 18. Funnel ----------- */
-echarts.init(document.getElementById('chart-funnel')).setOption({
+// 18. Funnel
+if(_ec('chart-funnel')) _ec('chart-funnel').setOption({
   tooltip:{trigger:'item',backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{color:INK,fontFamily:FONT,fontSize:12}},
   color:[BRAND,BRAND2,BRAND3,WARN,NEG],
-  series:[{
-    type:'funnel',left:'10%',width:'80%',
+  series:[{type:'funnel',left:'10%',width:'80%',
     label:{position:'inside',color:'#fff',fontFamily:FONT,fontWeight:700,fontSize:12,formatter:'{b}: {c}'},
     itemStyle:{borderColor:'#fff',borderWidth:2,borderRadius:6},
-    data:[
-      {value:1000,name:'Orders Placed'},
-      {value:920,name:'Shipped'},
-      {value:804,name:'Delivered'},
-      {value:466,name:'Net Retained'},
-      {value:151,name:'RTO'}
-    ]
+    data:DATA.funnel_data
   }]
 });
 
-/* ----------- 19. SLA ----------- */
-echarts.init(document.getElementById('chart-sla')).setOption({
-  tooltip:baseTip, grid:baseGrid,
-  xAxis:{type:'category',data:['Myntra','Flipkart','Amazon','Ajio','Tatacliq'],axisLabel:axisL,axisLine,axisTick:{show:false}},
+// 19. SLA
+if(_ec('chart-sla')) _ec('chart-sla').setOption({
+  tooltip:baseTip,grid:baseGrid,
+  xAxis:{type:'category',data:DATA.sla_data.map(r=>r[0]),axisLabel:axisL,axisLine,axisTick:{show:false}},
   yAxis:{type:'value',max:100,axisLabel:{...axisL,formatter:'{value}%'},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
-  series:[{
-    type:'bar',barWidth:'40%',
+  series:[{type:'bar',barWidth:'40%',
     itemStyle:{color:p=>p.value>=95?POS:p.value>=90?WARN:NEG,borderRadius:[6,6,0,0]},
     label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11,formatter:'{c}%'},
     markLine:{symbol:'none',label:{formatter:'Target 95%',color:WARN,fontFamily:FONT,fontSize:11},lineStyle:{color:WARN,type:'dashed',width:1.4},data:[{yAxis:95}]},
-    data:[96.4,93.1,97.2,95.6,98.0]
+    data:DATA.sla_data.map(r=>r[1])
   }]
 });
 
-/* ----------- 20. Depth distribution ----------- */
-echarts.init(document.getElementById('chart-depth')).setOption({
-  tooltip:baseTip, grid:baseGrid,
+// 20. Depth distribution
+if(_ec('chart-depth')) _ec('chart-depth').setOption({
+  tooltip:baseTip,grid:baseGrid,
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:16,icon:'roundRect'},
-  xAxis:{type:'category',data:['≥ 3 (Healthy)','< 3 (Thin)','Out of Stock'],axisLabel:axisL,axisLine,axisTick:{show:false}},
+  xAxis:{type:'category',data:DATA.depth_labels,axisLabel:axisL,axisLine,axisTick:{show:false}},
   yAxis:[
     {type:'value',name:'Articles',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},axisLabel:axisL,splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
     {type:'value',name:'Units',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},axisLabel:axisL,splitLine:{show:false},axisLine:{show:false},axisTick:{show:false}}
   ],
   series:[
-    {name:'Articles',type:'bar',barWidth:'30%',itemStyle:{color:BRAND,borderRadius:[6,6,0,0]},data:[190,83,79]},
-    {name:'Units',type:'bar',barWidth:'30%',yAxisIndex:1,itemStyle:{color:BRAND3,borderRadius:[6,6,0,0]},data:[5362,197,0]}
+    {name:'Articles',type:'bar',barWidth:'30%',itemStyle:{color:BRAND,borderRadius:[6,6,0,0]},data:DATA.depth_articles,label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11}},
+    {name:'Units',type:'bar',barWidth:'30%',yAxisIndex:1,itemStyle:{color:BRAND3,borderRadius:[6,6,0,0]},data:DATA.depth_units,label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11}}
   ]
 });
 
-/* ----------- 21. Discount bar ----------- */
-echarts.init(document.getElementById('chart-disc')).setOption({
-  tooltip:baseTip, grid:baseGrid,
+// 21. Discount
+if(_ec('chart-disc')) _ec('chart-disc').setOption({
+  tooltip:baseTip,grid:baseGrid,
   legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:16,icon:'roundRect'},
-  xAxis:{type:'category',data:['0-10%','11-20%','31-40%','41-50%'],axisLabel:axisL,axisLine,axisTick:{show:false}},
+  xAxis:{type:'category',data:DATA.disc_names,axisLabel:axisL,axisLine,axisTick:{show:false}},
   yAxis:{type:'value',axisLabel:axisL,splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
   series:[
-    {name:'Sale',type:'bar',barWidth:'30%',itemStyle:{color:BRAND,borderRadius:[6,6,0,0]},data:[769,19,1,1]},
-    {name:'Articles',type:'bar',barWidth:'30%',itemStyle:{color:BRAND3,borderRadius:[6,6,0,0]},data:[348,2,1,1]}
+    {name:'Sale',type:'bar',barWidth:'30%',itemStyle:{color:BRAND,borderRadius:[6,6,0,0]},data:DATA.disc_sale,label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11}},
+    {name:'Articles',type:'bar',barWidth:'30%',itemStyle:{color:BRAND3,borderRadius:[6,6,0,0]},data:DATA.disc_art,label:{show:true,position:'top',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11}}
   ]
 });
 
-/* ----------- 22. Bench scatter ----------- */
-echarts.init(document.getElementById('chart-bench-scatter')).setOption({
+// 22. Bench scatter
+if(_ec('chart-bench-scatter')) _ec('chart-bench-scatter').setOption({
   tooltip:{backgroundColor:'#fff',borderColor:'#e7e3d3',borderWidth:1,textStyle:{color:INK,fontFamily:FONT,fontSize:12},
     formatter:p=>`<b>${p.data[3]}</b><br/>Sale: ${p.data[2]}<br/>Return %: ${p.data[0]}%<br/>RTO %: ${p.data[1]}%`},
   grid:baseGrid,
-  xAxis:{name:'Return %',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},
-    type:'value',axisLabel:{...axisL,formatter:'{value}%'},splitLine:splitL,axisLine,axisTick:{show:false}},
-  yAxis:{name:'RTO %',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},
-    type:'value',axisLabel:{...axisL,formatter:'{value}%'},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
-  series:[{
-    type:'scatter',
-    symbolSize:p=>20+Math.sqrt(p[2])*3,
-    itemStyle:{color:p=>{
-      const name=p.data[3];
-      return {Myntra:BRAND, Flipkart:NEG, Amazon:NEG, Ajio:POS, Tatacliq:POS}[name];
-    },opacity:.85,borderColor:'#fff',borderWidth:2},
+  xAxis:{name:'Return %',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},type:'value',axisLabel:{...axisL,formatter:'{value}%'},splitLine:splitL,axisLine,axisTick:{show:false}},
+  yAxis:{name:'RTO %',nameTextStyle:{color:TXT,fontFamily:FONT,fontSize:11},type:'value',axisLabel:{...axisL,formatter:'{value}%'},splitLine:splitL,axisLine:{show:false},axisTick:{show:false}},
+  series:[{type:'scatter',symbolSize:p=>20+Math.sqrt(p[2])*3,
+    itemStyle:{color:p=>{const m={Myntra:BRAND,Flipkart:NEG,Amazon:NEG,Ajio:POS,Tatacliq:POS,FBA:BRAND3};return m[p.data[3]]||BRAND2;},opacity:.85,borderColor:'#fff',borderWidth:2},
     label:{show:true,position:'right',color:INK,fontFamily:FONT,fontSize:11,fontWeight:600,formatter:p=>p.data[3]},
-    data:[
-      [41.16,28.89,328,'Myntra'],
-      [49.17,57.72,303,'Flipkart'],
-      [53.16,50.00,79,'Amazon'],
-      [16.67,41.67,72,'Ajio'],
-      [0,0,22,'Tatacliq']
-    ]
+    data:DATA.bench_scatter
   }]
 });
 
-/* ----------- 23. Channel index ----------- */
-echarts.init(document.getElementById('chart-index')).setOption({
-  tooltip:baseTip, grid:{...baseGrid,left:84},
-  legend:{bottom:0,left:'center',textStyle:{color:TXT,fontFamily:FONT,fontSize:11},itemGap:16,icon:'roundRect'},
+// 23. Channel index
+if(_ec('chart-index')) _ec('chart-index').setOption({
+  tooltip:baseTip,grid:{...baseGrid,left:84},
   xAxis:{type:'value',axisLabel:axisL,splitLine:splitL,axisLine:{show:false},axisTick:{show:false},max:100},
-  yAxis:{type:'category',data:['Tatacliq','Ajio','Myntra','Flipkart','Amazon'],axisLabel:{...axisL,fontWeight:600,color:INK},axisLine,axisTick:{show:false}},
-  series:[
-    {name:'Quality Index',type:'bar',barWidth:14,
-      itemStyle:{color:p=>p.value>=80?POS:p.value>=50?WARN:NEG,borderRadius:[0,4,4,0]},
-      label:{show:true,position:'right',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11},
-      data:[100,83,59,51,47]}
-  ]
+  yAxis:{type:'category',data:DATA.index_data.map(d=>d.name),axisLabel:{...axisL,fontWeight:600,color:INK},axisLine,axisTick:{show:false}},
+  series:[{name:'Quality Index',type:'bar',barWidth:14,
+    itemStyle:{color:p=>p.value>=80?POS:p.value>=50?WARN:NEG,borderRadius:[0,4,4,0]},
+    label:{show:true,position:'right',color:INK,fontFamily:FONT,fontWeight:700,fontSize:11},
+    data:DATA.index_data.map(d=>d.value)}]
 });
 
-/* -------- Top 20 best sellers (table fill) ---------- */
-const bestSellers=[
-  ['108-99258-43','Kurta',78,115883,154,28,'35.90%',1486],
-  ['108-4652N-93','Kurta',45,67118,14,0,'0.00%',1492],
-  ['108-4652N-01','Kurta',28,41740,20,0,'0.00%',1491],
-  ['108-71638-44','Kurta',26,41329,120,11,'42.31%',1590],
-  ['108-99258-44','Kurta',24,35894,237,5,'20.83%',1496],
-  ['551-6614N-50','Shirt',20,28014,10,0,'0.00%',1401],
-  ['108-99258-19','Kurta',20,30009,155,5,'25.00%',1500],
-  ['108-4652N-27','Kurta',19,28453,24,0,'0.00%',1498],
-  ['108-4652N-43','Kurta',18,23825,57,6,'33.33%',1324],
-  ['108-3120S-02','Kurta',17,28881,16,5,'29.41%',1699],
-  ['108-99258-02','Kurta',16,23974,276,7,'43.75%',1498],
-  ['108-3119S-44','Kurta',15,25484,11,4,'26.67%',1699],
-  ['551-6614N-43','Shirt',14,19586,25,5,'35.71%',1399],
-  ['108-7614N-36','Kurta',13,20783,25,0,'0.00%',1599],
-  ['551-6614N-27','Shirt',13,18187,22,0,'0.00%',1399],
-  ['108-99258-01','Kurta',12,17775,70,6,'50.00%',1481],
-  ['108-3120S-44','Kurta',11,18521,5,5,'45.45%',1684],
-  ['108-4652N-59','Kurta',11,16448,26,0,'0.00%',1495],
-  ['558-8096N-01','Kurti',10,19398,0,0,'0.00%',1940],
-  ['108-99258-05','Kurta',10,14761,113,4,'40.00%',1476]
-];
-document.getElementById('best-sellers').innerHTML = bestSellers.map(r=>{
-  const retClass = parseFloat(r[6])>=35 ? 'delta-neg' : parseFloat(r[6])>=20 ? 'delta-warn' : '';
-  return `<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class='num'>${r[2]}</td><td class='num'>₹${r[3].toLocaleString()}</td><td class='num'>${r[4]}</td><td class='num'>${r[5]}</td><td class='num'><span class='${retClass}'>${r[6]}</span></td><td class='num'>₹${r[7].toLocaleString()}</td></tr>`;
-}).join('');
-
-/* slow movers — high inventory, low velocity */
-const slow=[
-  ['108-99258-02','Kurta',16,23974,276,7,'43.75%',1498],
-  ['108-99258-44','Kurta',24,35894,237,5,'20.83%',1496],
-  ['108-99258-19','Kurta',20,30009,155,5,'25.00%',1500],
-  ['108-99258-43','Kurta',78,115883,154,28,'35.90%',1486],
-  ['108-71638-44','Kurta',26,41329,120,11,'42.31%',1590],
-  ['108-99258-05','Kurta',10,14761,113,4,'40.00%',1476],
-  ['108-99258-01','Kurta',12,17775,70,6,'50.00%',1481],
-  ['108-4652N-43','Kurta',18,23825,57,6,'33.33%',1324],
-  ['108-4652N-59','Kurta',11,16448,26,0,'0.00%',1495],
-  ['551-6614N-43','Shirt',14,19586,25,5,'35.71%',1399],
-  ['108-7614N-36','Kurta',13,20783,25,0,'0.00%',1599],
-  ['108-4652N-27','Kurta',19,28453,24,0,'0.00%',1498],
-  ['551-6614N-27','Shirt',13,18187,22,0,'0.00%',1399],
-  ['108-4652N-01','Kurta',28,41740,20,0,'0.00%',1491],
-  ['108-3120S-02','Kurta',17,28881,16,5,'29.41%',1699],
-  ['108-4652N-93','Kurta',45,67118,14,0,'0.00%',1492],
-  ['108-3119S-44','Kurta',15,25484,11,4,'26.67%',1699],
-  ['551-6614N-50','Shirt',20,28014,10,0,'0.00%',1401],
-  ['108-3120S-44','Kurta',11,18521,5,5,'45.45%',1684],
-  ['558-8096N-01','Kurti',10,19398,0,0,'0.00%',1940]
-];
-document.getElementById('slow-movers').innerHTML = slow.map(r=>{
-  const retClass = parseFloat(r[6])>=35 ? 'delta-neg' : parseFloat(r[6])>=20 ? 'delta-warn' : '';
-  return `<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class='num'>${r[2]}</td><td class='num'>₹${r[3].toLocaleString()}</td><td class='num'>${r[4]}</td><td class='num'>${r[5]}</td><td class='num'><span class='${retClass}'>${r[6]}</span></td><td class='num'>₹${r[7].toLocaleString()}</td></tr>`;
-}).join('');
-
-/* keep charts responsive */
 window.addEventListener('resize',()=>{
-  document.querySelectorAll('[id^="chart-"]').forEach(el=>{
-    const inst = echarts.getInstanceByDom(el);
-    if(inst) inst.resize();
-  });
+  document.querySelectorAll('[id^="chart-"]').forEach(el=>{const inst=echarts.getInstanceByDom(el);if(inst)inst.resize();});
 });
-</script>
-</body>
-</html>
+</script></body></html>
